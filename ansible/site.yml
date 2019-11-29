@@ -1,0 +1,17 @@
+---
+- name: Provision GoCD server
+  hosts: server
+  remote_user: ec2-user
+  become: yes
+  become_method: sudo
+  roles:
+    - server
+    #- proxy
+
+# - name: Provision GoCD agents
+#   hosts: agent
+#   remote_user: ec2-user
+#   become: yes
+#   become_method: sudo
+#   roles:
+#     - agent

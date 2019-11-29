@@ -1,0 +1,45 @@
+---
+- pip:
+    name: docker-py
+
+- name: Create a ext4 filesystem on attached volume
+  filesystem:
+    fstype: ext4
+    dev: /dev/nvme1n1
+    opts: -L GOCD_DB
+
+- name: Create directory for GoCD data mount
+  file:
+    path: /var/gocd-data
+    state: directory
+
+- name: Mount GoCD volume by label
+  mount:
+    path: /var/gocd-data
+    src: LABEL=GOCD_DB
+    fstype: ext4
+    state: mounted
+
+- name: Set GoCD data directory permissions
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+    owner: "{{ ansible_user }}"
+    group: root
+  with_items:
+    - /var/gocd-data/data
+    - /var/gocd-data/home
+
+- name: Setup GoCD server container
+  docker_container:
+    name: server
+    image: gocd/gocd-server:v19.9.0
+    restart_policy: always
+    restart: yes
+    ports:
+     - "8153:8153"
+     - "8154:8154"
+    volumes:
+      - /var/gocd-data/data:/godata
+      - /var/gocd-data/home:/home/go

@@ -85,16 +85,17 @@ case "${command}" in
       ;;
   _provision)
     check_env
-    ansible-playbook -i ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/site.yml
-    ;;
-  provision)
-    check_env
+    sudo pip install yasha #FIXME: add yasha in the dojo image
     yasha --variables terraform/tf-out.json -o ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars
     cat << EOF > ansible/group_vars/${NHS_ENVIRONMENT}.yml
 # This file is generated
 env: ${NHS_ENVIRONMENT}
 EOF
+    ansible-playbook -i ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/site.yml
+    ;;
+  provision)
+    check_env
     dojo -c Dojofile-ansible "./tasks _provision"
     ;;
   *)
