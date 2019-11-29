@@ -27,10 +27,6 @@ variable "gocd_agent_volume_size" {
   default = 40
 }
 
-variable "agent_count" {
-  default = 1
-}
-
 variable "agent_flavor" {
   default = "t3a.small"
 }

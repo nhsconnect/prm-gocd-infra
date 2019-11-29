@@ -2,10 +2,10 @@ resource "aws_instance" "gocd_agent" {
   count         = var.agent_count
   ami           = data.aws_ami.amazon-linux-2.id
   instance_type = var.agent_flavor
-  key_name      = aws_key_pair.gocd.key_name
+  key_name      = var.agent_keypair_name
 
   # instance profile sufficient to access the ECR images, because we are pulling gocd agent image.
-  iam_instance_profile = aws_iam_instance_profile.gocd_agent.name
+  iam_instance_profile = var.agent_instance_profile
 
   root_block_device {
     volume_type           = "gp2"
@@ -14,25 +14,18 @@ resource "aws_instance" "gocd_agent" {
   }
   availability_zone = var.az
 
-  subnet_id                   = local.subnet_id
-  associate_public_ip_address = true # required for internet access until we have nat
+  subnet_id                   = var.subnet_id
+  associate_public_ip_address = var.allocate_public_ip # required for internet access until we have nat
   #TODO use NAT for agents
 
   vpc_security_group_ids = [
-    aws_security_group.go_agent_sg.id,
+    var.agent_sg_id,
   ]
 
   tags = {
     Name        = "GoCD agent ${count.index} VM ${var.environment}"
     CreatedBy   = "prm-gocd-infra"
     Environment = var.environment
-  }
-
-  connection {
-    host        = self.public_ip
-    type        = "ssh"
-    user        = local.remote_user
-    private_key = local.private_key
   }
 
   user_data            = "${data.template_file.agent_userdata.rendered}"
