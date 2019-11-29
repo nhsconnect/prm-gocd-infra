@@ -1,0 +1,8 @@
+.terraform/
+*.tfplan
+*.tfstate
+*.tfstate.backup
+/secrets.yml
+/terraform/*_ip.txt
+/terraform/ssh/
+/terraform/tf-out.json

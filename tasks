@@ -1,0 +1,105 @@
+#!/bin/bash
+
+set -Eeo pipefail
+
+NHS_SERVICE=gocd
+AWS_REGION=eu-west-2
+
+function tf_plan {
+  operation=$1
+
+  cd terraform/
+  terraform init -backend-config key=nhs-${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate
+  terraform get # modules
+  if [[ "${operation}" == "create" ]]; then
+    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan"
+  elif [[ "${operation}" == "destroy" ]]; then
+    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan" -destroy
+  else
+    echo "Unknown operation (should be create or destroy), got: ${operation}"
+    exit 1
+  fi
+}
+
+function tf_apply {
+  cd terraform/
+  terraform init -backend-config key=nhs-${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate
+  terraform get # modules
+  terraform apply nhs_deployment.tfplan
+  terraform output -json > tf-out.json
+}
+
+function check_env {
+  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
+    echo "Must set NHS_ENVIRONMENT"
+    exit 1
+  fi
+}
+
+function generate_ssh_key {
+  mkdir -p terraform/ssh/
+  if [[ ! -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" ]]; then
+    #TODO check aws authentication
+    set +e
+    secret_id="/NHS/GoCD/${NHS_ENVIRONMENT}/id_rsa"
+    id_rsa=$(aws ssm get-parameter --with-decryption --region $AWS_REGION --name $secret_id | jq -r ".Parameter.Value")
+    if [[ $? == 0 ]]; then
+      echo "$id_rsa" > terraform/ssh/gocd-${NHS_ENVIRONMENT}
+    else
+      set -e
+      ssh-keygen -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" -q -N ""
+    fi
+    set -e
+  fi
+  chmod 0600 terraform/ssh/gocd-${NHS_ENVIRONMENT}
+  ssh-keygen -y -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" > "terraform/ssh/gocd-${NHS_ENVIRONMENT}.pub"
+  #TODO put secret to ssm
+}
+
+command="$1"
+case "${command}" in
+  ssh_key)
+      check_env
+      generate_ssh_key
+      ;;
+  tf)
+      check_env
+      generate_ssh_key
+      dojo "bash"
+      ;;
+  _tf_plan)
+      tf_plan "$2"
+      ;;
+  tf_plan)
+      check_env
+      generate_ssh_key
+      dojo "./tasks _tf_plan $2"
+      ;;
+  _tf_apply)
+      tf_apply
+      ;;
+  tf_apply)
+      check_env
+      generate_ssh_key
+      dojo "./tasks _tf_apply"
+      ;;
+  _provision)
+    check_env
+    ansible-playbook -i ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/site.yml
+    ;;
+  provision)
+    check_env
+    yasha --variables terraform/tf-out.json -o ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
+    mkdir -p ansible/group_vars
+    cat << EOF > ansible/group_vars/${NHS_ENVIRONMENT}.yml
+# This file is generated
+env: ${NHS_ENVIRONMENT}
+EOF
+    dojo -c Dojofile-ansible "./tasks _provision"
+    ;;
+  *)
+      echo "Invalid command: '${command}'"
+      exit 1
+      ;;
+esac
+set +e
