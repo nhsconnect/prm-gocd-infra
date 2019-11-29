@@ -1,0 +1,26 @@
+---
+- name: Nginx config directory
+  file:
+    path: /etc/gocd-proxy
+    state: directory
+    mode: 0755
+
+- name: Create nginx virtual host config file
+  template:
+    src: server.conf.j2
+    dest: /etc/gocd-proxy/gocd-{{ env }}.conf
+    mode: 0644
+
+#TODO: automate ssl creation somewhere else, cannot use IAM instance profile because certbot does not support it
+
+- name: Create nginx container
+  docker_container:
+    name: "nginx"
+    image: "nginx:1.17.0"
+    restart: true
+    restart_policy: always
+    network_mode: host
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/etc/letsencrypt:/etc/letsencrypt"
+      - /etc/gocd-proxy/gocd-{{ env }}.conf:/etc/nginx/conf.d/gocd-{{ env }}.conf

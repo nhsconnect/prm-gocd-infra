@@ -4,10 +4,17 @@ resource "aws_security_group" "gocd_server" {
   description = "GoCD server ${var.environment}"
   vpc_id      = aws_vpc.main.id
 
-  # Allow connections to GoCD from local networks and whitelisted IPs
+  # Allow connections to GoCD from local networks
   ingress {
     from_port   = 8153
     to_port     = 8154
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8", "${var.my_ip}/32"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = concat(split(",", "${data.aws_ssm_parameter.inbound_ips.value}"),
       ["10.0.0.0/8", "${var.my_ip}/32"])

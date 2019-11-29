@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+# This file is managed by Ansible. Do not manually edit.
+
+docker run -ti --rm -v /etc/letsencrypt:/etc/letsencrypt \
+ certbot/dns-route53:v0.38.0 certonly --keep-until-expiring \
+ --register-unsafely-without-email --dns-route53 --agree-tos \
+ -d {{ domain }} \
+ {% if domain2 is defined and domain2 %}-d {{ domain2 }}{% endif %}

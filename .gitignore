@@ -8,3 +8,4 @@
 /terraform/tf-out.json
 /ansible/group_vars/test.yml
 /ansible/inventory/*.ini
+/letsencrypt/

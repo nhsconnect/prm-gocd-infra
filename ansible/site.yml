@@ -6,7 +6,7 @@
   become_method: sudo
   roles:
     - server
-    #- proxy
+    - proxy
 
 # - name: Provision GoCD agents
 #   hosts: agent
