@@ -34,7 +34,7 @@
 - name: Setup GoCD server container
   docker_container:
     name: server
-    image: gocd/gocd-server:v19.9.0
+    image: gocd/gocd-server:v19.3.0
     restart_policy: always
     restart: yes
     ports:

@@ -1,0 +1,3 @@
+domain: "{{ env }}.gocd.patient-deductions.nhs.uk"
+ssl_enabled: True
+gocd_wait_timeout: 120

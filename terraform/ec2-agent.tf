@@ -16,7 +16,7 @@ resource "aws_instance" "gocd_agent" {
 
   subnet_id                   = local.subnet_id
   associate_public_ip_address = true # required for internet access until we have nat
-  #TODO use NAT for agents, provision them from a bastion
+  #TODO use NAT for agents
 
   vpc_security_group_ids = [
     aws_security_group.go_agent_sg.id,
@@ -35,7 +35,15 @@ resource "aws_instance" "gocd_agent" {
     private_key = local.private_key
   }
 
-  provisioner "remote-exec" {
-    script = "./bootstrap.sh"
+  user_data            = "${data.template_file.agent_userdata.rendered}"
+}
+
+data "template_file" "agent_userdata" {
+  template = "${file("${path.module}/templates/bootstrap-agent.sh")}"
+
+  vars = {
+    GOCD_ENVIRONMENT = var.environment
+    AWS_REGION = var.region
+    GOCD_AGENT_IMAGE_TAG = var.agent_image_tag
   }
 }
