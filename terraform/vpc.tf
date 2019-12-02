@@ -12,3 +12,9 @@ resource "aws_ssm_parameter" "vpc_id" {
   type  = "String"
   value = aws_vpc.main.id
 }
+
+resource "aws_ssm_parameter" "cidr_block" {
+  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/cidr_block"
+  type  = "String"
+  value = var.vpc_cidr_block
+}

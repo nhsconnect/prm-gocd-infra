@@ -30,6 +30,12 @@ resource "aws_route53_zone" "private" {
   }
 }
 
+resource "aws_ssm_parameter" "gocd_zone_id" {
+  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/route53_zone_id"
+  type = "String"
+  value = aws_route53_zone.private.id
+}
+
 resource "aws_route53_record" "gocd_private" {
   zone_id = aws_route53_zone.private.id
   name    = "${var.environment}.gocd.${var.root_domain}"
