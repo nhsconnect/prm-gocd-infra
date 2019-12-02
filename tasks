@@ -37,11 +37,11 @@ function check_env {
 }
 
 function generate_ssh_key {
+  secret_id="/NHS/GoCD/${NHS_ENVIRONMENT}/id_rsa"
   mkdir -p terraform/ssh/
   if [[ ! -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" ]]; then
     #TODO check aws authentication
     set +e
-    secret_id="/NHS/GoCD/${NHS_ENVIRONMENT}/id_rsa"
     id_rsa=$(aws ssm get-parameter --with-decryption --region $AWS_REGION --name $secret_id | jq -r ".Parameter.Value")
     if [[ $? == 0 ]]; then
       echo "$id_rsa" > terraform/ssh/gocd-${NHS_ENVIRONMENT}
@@ -53,18 +53,27 @@ function generate_ssh_key {
   fi
   chmod 0600 terraform/ssh/gocd-${NHS_ENVIRONMENT}
   ssh-keygen -y -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" > "terraform/ssh/gocd-${NHS_ENVIRONMENT}.pub"
-  #TODO put secret to ssm
+  aws ssm put-parameter \
+   --region $AWS_REGION \
+   --name $secret_id \
+   --type SecureString \
+   --overwrite \
+   --value "`cat terraform/ssh/gocd-${NHS_ENVIRONMENT}`"
 }
 
 command="$1"
 case "${command}" in
-  ssh_key)
+  _ssh_key)
       check_env
       generate_ssh_key
       ;;
+  ssh_key)
+      check_env
+      dojo "./tasks _ssh_key"
+      ;;
   tf)
       check_env
-      generate_ssh_key
+      ./tasks ssh_key
       dojo "bash"
       ;;
   _tf_plan)
@@ -72,7 +81,7 @@ case "${command}" in
       ;;
   tf_plan)
       check_env
-      generate_ssh_key
+      ./tasks ssh_key
       dojo "./tasks _tf_plan $2"
       ;;
   _tf_apply)
@@ -80,7 +89,7 @@ case "${command}" in
       ;;
   tf_apply)
       check_env
-      generate_ssh_key
+      ./tasks ssh_key
       dojo "./tasks _tf_apply"
       ;;
   _provision)
