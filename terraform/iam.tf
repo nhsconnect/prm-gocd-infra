@@ -54,3 +54,9 @@ resource "aws_iam_role_policy_attachment" "agent-ssm-attach" {
   role       = aws_iam_role.gocd_agent.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
 }
+
+# Agent provisions all infrastructure in AWS - must allow full perms
+resource "aws_iam_role_policy_attachment" "agent-admin-attach" {
+  role       = aws_iam_role.gocd_agent.name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
