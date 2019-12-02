@@ -3,6 +3,7 @@
 AGENT_IMAGE_VERSION=${GOCD_AGENT_IMAGE_TAG}
 GOCD_ENVIRONMENT=${GOCD_ENVIRONMENT}
 AWS_REGION=${AWS_REGION}
+AGENT_RESOURCES=${AGENT_RESOURCES}
 
 if hash docker 2>/dev/null; then
   echo "Docker aleady installed"
@@ -29,6 +30,7 @@ docker run -d \
   --cap-add SYS_ADMIN \
   --security-opt apparmor:unconfined \
   -e AGENT_HOSTNAME=$HOSTNAME \
+  -e AGENT_RESOURCES=$AGENT_RESOURCES \
   -e GOCD_ENVIRONMENT=$GOCD_ENVIRONMENT \
   -e AWS_REGION=$AWS_REGION \
   -e DOCKER_OPTS="--storage-driver overlay2" \

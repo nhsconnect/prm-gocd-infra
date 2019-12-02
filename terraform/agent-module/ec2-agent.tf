@@ -38,5 +38,6 @@ data "template_file" "agent_userdata" {
     GOCD_ENVIRONMENT = var.environment
     AWS_REGION = var.region
     GOCD_AGENT_IMAGE_TAG = var.agent_image_tag
+    AGENT_RESOURCES = var.agent_resources
   }
 }

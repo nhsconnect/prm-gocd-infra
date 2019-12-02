@@ -14,4 +14,5 @@ module "local-agents" {
     agent_sg_id = aws_security_group.go_agent_sg.id
     agent_instance_profile = aws_iam_instance_profile.gocd_agent.name
     agent_keypair_name = aws_key_pair.gocd.key_name
+    agent_resources = "docker"
 }

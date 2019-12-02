@@ -8,6 +8,8 @@ variable "agent_instance_profile" {}
 
 variable "agent_keypair_name" {}
 
+variable "agent_resources" {}
+
 variable "environment" {}
 
 variable "subnet_id" {}
