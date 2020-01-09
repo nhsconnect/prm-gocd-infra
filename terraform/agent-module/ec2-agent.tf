@@ -31,6 +31,12 @@ resource "aws_instance" "gocd_agent" {
   user_data            = "${data.template_file.agent_userdata.rendered}"
 }
 
+resource "aws_ssm_parameter" "agent_ips" {
+  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_ips"
+  type = "String"
+  value = join(",", aws_instance.gocd_agent.*.public_ip)
+}
+
 data "template_file" "agent_userdata" {
   template = "${file("${path.module}/templates/bootstrap-agent.sh")}"
 

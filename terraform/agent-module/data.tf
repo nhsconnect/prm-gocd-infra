@@ -12,3 +12,5 @@ data "aws_ami" "amazon-linux-2" {
     values = ["available"]
   }
 }
+
+data "aws_caller_identity" "current" {}
