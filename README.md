@@ -35,6 +35,8 @@ Review the terraform plan and apply with:
 ./tasks tf_apply
 ```
 
+Agent's images are built and pushed manually, dockerfiles are versioned at [nhsconnect/prm-docker-gocd-agent](https://github.com/nhsconnect/prm-docker-gocd-agent).
+
 # TODO
 
 Some more automation to do:
