@@ -28,7 +28,7 @@ variable "gocd_agent_volume_size" {
 }
 
 variable "agent_flavor" {
-  default = "t3a.small"
+  default = "t3a.medium"
 }
 
 variable "vpc_cidr_block" {

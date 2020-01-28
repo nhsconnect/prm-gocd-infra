@@ -35,6 +35,12 @@ Review the terraform plan and apply with:
 ./tasks tf_apply
 ```
 
+Updating only the agents can be done with:
+```
+NHS_ENVIRONMENT=prod ./tasks tf_plan_agents create
+NHS_ENVIRONMENT=prod ./tasks tf_apply
+```
+
 Agent's images are built and pushed manually, dockerfiles are versioned at [nhsconnect/prm-docker-gocd-agent](https://github.com/nhsconnect/prm-docker-gocd-agent).
 
 # TODO
