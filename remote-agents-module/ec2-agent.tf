@@ -27,11 +27,11 @@ resource "aws_instance" "gocd_agent" {
     Environment = var.environment
   }
 
-  user_data            = "${data.template_file.agent_userdata.rendered}"
+  user_data            = data.template_file.agent_userdata.rendered
 }
 
 data "template_file" "agent_userdata" {
-  template = "${file("${path.module}/templates/bootstrap-agent.sh")}"
+  template = file("${path.module}/templates/bootstrap-agent.sh")
 
   vars = {
     GOCD_ENVIRONMENT = var.environment
