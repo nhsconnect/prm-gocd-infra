@@ -31,6 +31,11 @@
     - /var/gocd-data/data
     - /var/gocd-data/home
 
+- name: Configure Google Chat plugin
+  template:
+    src: gchat_notif.conf.j2
+    dest: /var/gocd-data/home/gchat_notif.conf
+
 - name: Setup GoCD server container
   docker_container:
     name: server
@@ -40,6 +45,8 @@
     ports:
      - "8153:8153"
      - "8154:8154"
+    env:
+      GCHAT_NOTIFIER_CONF_PATH: /home/go/gchat_notif.conf
     volumes:
       - /var/gocd-data/data:/godata
       - /var/gocd-data/home:/home/go

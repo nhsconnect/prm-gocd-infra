@@ -9,3 +9,4 @@
 /ansible/group_vars/test.yml
 /ansible/inventory/*.ini
 /letsencrypt/
+/ansible/group_vars/prod.yml
