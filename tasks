@@ -103,6 +103,14 @@ case "${command}" in
       ./tasks ssh_key
       dojo "./tasks _tf_plan_agents $2"
       ;;
+  _tf_plan_server)
+      tf_plan "$2" "-target aws_instance.gocd_server"
+      ;;
+  tf_plan_server)
+      check_env
+      ./tasks ssh_key
+      dojo "./tasks _tf_plan_server $2"
+      ;;
   _tf_apply)
       tf_apply
       ;;
