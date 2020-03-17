@@ -26,6 +26,7 @@ resource "aws_instance" "gocd_agent" {
     Name        = "GoCD agent ${count.index} VM ${var.environment}"
     CreatedBy   = "prm-gocd-infra"
     Environment = var.environment
+    Service     = "GoCD"
   }
 
   user_data            = "${data.template_file.agent_userdata.rendered}"

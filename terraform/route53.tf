@@ -28,6 +28,13 @@ resource "aws_route53_zone" "private" {
     Name      = "Private DNS zone for ${var.environment} GoCD"
     CreatedBy = "prm-gocd-infra"
   }
+
+  lifecycle {
+    # Because other deductions VPCs are associated in other repos
+    ignore_changes = [
+      vpc
+    ]
+  }
 }
 
 resource "aws_ssm_parameter" "gocd_zone_id" {

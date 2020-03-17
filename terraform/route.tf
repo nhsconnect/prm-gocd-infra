@@ -9,6 +9,13 @@ resource "aws_route_table" "public" {
   tags = {
     Name = "GoCD-${var.environment}-public"
   }
+
+  lifecycle {
+    # Because other deductions VPC modify the routing table
+    ignore_changes = [
+      route
+    ]
+  }
 }
 
 resource "aws_route_table_association" "public" {
