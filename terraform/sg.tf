@@ -1,3 +1,46 @@
+variable "users" {
+  default = [
+    "oktawiakata",        # Oktawia Kata
+  ]
+}
+
+data "aws_ssm_parameter" "ip" {
+  count = length(var.users)
+  name = "/NHS/ip_whitelist/${var.users[count.index]}/ipv4"
+}
+
+locals {
+  agent_cidrs = [
+    for ip in module.local-agents.agent_ips:
+      "${ip}/32"
+  ]
+  whitelist_ips = [
+    for ip in data.aws_ssm_parameter.ip.*.value:
+      "${ip}/32"
+  ]
+  # This local should be the only source of truth on what IPs are allowed to connect from the Internet
+  allowed_public_ips = concat(
+    local.whitelist_ips,
+    local.agent_cidrs)
+}
+
+resource "aws_security_group" "gocd_sg" {
+  name        = "GoCD public access"
+  description = "Security group for GoCD public access"
+  vpc_id      = aws_vpc.main.id
+
+  # HTTPS from whitelisted IP
+  ingress {
+    from_port = 443
+    to_port   = 443
+    protocol  = "tcp"
+    cidr_blocks = local.allowed_public_ips
+  }
+
+  tags = {
+    Name      = "GoCD public access"
+  }
+}
 
 resource "aws_security_group" "gocd_server" {
   name        = "gocd-${var.environment}"
@@ -16,8 +59,7 @@ resource "aws_security_group" "gocd_server" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = concat(split(",", "${data.aws_ssm_parameter.inbound_ips.value}"),
-      ["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = ["10.0.0.0/8", "${var.my_ip}/32"]
   }
 
   # SSH for provisioning from whitelisted IP
@@ -25,8 +67,7 @@ resource "aws_security_group" "gocd_server" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = concat(split(",", "${data.aws_ssm_parameter.inbound_ips.value}"),
-      ["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = ["10.0.0.0/8", "${var.my_ip}/32"]
   }
 
   egress {
@@ -54,8 +95,7 @@ resource "aws_security_group" "go_agent_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = concat(split(",", "${data.aws_ssm_parameter.inbound_ips.value}"),
-      ["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = ["10.0.0.0/8", "${var.my_ip}/32"]
   }
 
   egress {

@@ -23,6 +23,6 @@ data "aws_ssm_parameter" "public_zone_id" {
 
 data "aws_caller_identity" "current" {}
 
-data "aws_ssm_parameter" "dynamic_gocd_sg" {
-  name = "/NHS/GoCD/${var.environment}/gocd_sg"
-}
+# data "aws_ssm_parameter" "dynamic_gocd_sg" {
+#   name = "/NHS/GoCD/${var.environment}/gocd_sg"
+# }

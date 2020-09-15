@@ -4,7 +4,7 @@ resource "aws_instance" "gocd_server" {
   availability_zone     = var.az
   subnet_id             = local.subnet_id
   vpc_security_group_ids = [
-    data.aws_ssm_parameter.dynamic_gocd_sg.value,
+    aws_security_group.gocd_sg.id,
     aws_security_group.gocd_server.id
   ]
   associate_public_ip_address = true
