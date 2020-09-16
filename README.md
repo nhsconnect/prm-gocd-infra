@@ -20,6 +20,15 @@ Each agent has Docker and Dojo available, which makes it possible to build any p
 
 # Deployment/Lifecycle
 
+## Prerequisites
+
+- Add your IP address to SSM `inbound ips` parameter.
+- Run all the deployment steps we see below from the same machine in order to avoid issue with ssh keys.
+- Make sure your AWS profile matches the profile in `provider.tf`.
+- Make sure you always run `tf_plan` before running `tf_apply`.
+
+## Deployment
+
 You can pick which deployment to manage by setting environment variable `NHS_ENVIRONMENT`.
 To make changes in production, set
 ```
@@ -34,6 +43,9 @@ Review the terraform plan and apply with:
 ```
 ./tasks tf_apply
 ```
+
+At this point EC2 instance should exist. Next step is to install GOCD software on it.
+To provision GOCD server use `./tasks provision`.
 
 Updating only the agents can be done with:
 ```
