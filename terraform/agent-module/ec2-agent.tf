@@ -29,7 +29,7 @@ resource "aws_instance" "gocd_agent" {
     Service     = "GoCD"
   }
 
-  user_data            = "${data.template_file.agent_userdata.rendered}"
+  user_data            = data.template_file.agent_userdata.rendered
 }
 
 resource "aws_ssm_parameter" "agent_ips" {

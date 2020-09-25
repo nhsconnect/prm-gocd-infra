@@ -1,5 +1,5 @@
 resource "aws_instance" "gocd_server" {
-  ami                   = "${data.aws_ami.amazon-linux-2.id}"
+  ami                   = data.aws_ami.amazon-linux-2.id
   instance_type         = var.server_flavor
   availability_zone     = var.az
   subnet_id             = local.subnet_id
@@ -39,8 +39,8 @@ resource "aws_ebs_volume" "gocd_db" {
 }
 
 resource "aws_volume_attachment" "db_att" {
-  volume_id   = "${aws_ebs_volume.gocd_db.id}"
-  instance_id = "${aws_instance.gocd_server.id}"
+  volume_id   = aws_ebs_volume.gocd_db.id
+  instance_id = aws_instance.gocd_server.id
   device_name = "/dev/sdf"
 
   # Stop DB and umount the filesystem before detaching the volume
@@ -49,9 +49,9 @@ resource "aws_volume_attachment" "db_att" {
       type     = "ssh"
       user     = local.remote_user
       private_key = local.private_key
-      host     = "${aws_instance.gocd_server.public_ip}"
+      host     = aws_instance.gocd_server.public_ip
     }
-    when    = "destroy"
+    when    = destroy
     inline = [
       "sudo docker stop db || true",
       "sudo umount /var/gocd-data || true"
