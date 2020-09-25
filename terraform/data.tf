@@ -13,10 +13,6 @@ data "aws_ami" "amazon-linux-2" {
   }
 }
 
-data "aws_ssm_parameter" "inbound_ips" {
-    name = "/NHS/dev-${data.aws_caller_identity.current.account_id}/tf/inbound_ips"
-}
-
 data "aws_ssm_parameter" "public_zone_id" {
     name = "/repo/prm-deductions-base-infra/output/root-zone-id"
 }

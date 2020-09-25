@@ -1,12 +1,10 @@
 variable "users" {
-  default = [
-    "oktawiakata", # Oktawia Kata
-  ]
+  default = []
 }
 
 data "aws_ssm_parameter" "ip" {
   count = length(var.users)
-  name  = "/NHS/ip_whitelist/${var.users[count.index]}/ipv4"
+  name  = "/repo/prm-deductions-base-infra/user-input/whitelisted-ipv4-${var.users[count.index]}"
 }
 
 locals {
@@ -19,7 +17,7 @@ locals {
     "${ip}/32"
   ]
   # This local should be the only source of truth on what IPs are allowed to connect from the Internet
-  allowed_public_ips = concat(local.whitelist_ips, split(",", data.aws_ssm_parameter.inbound_ips.value), local.agent_cidrs)
+  allowed_public_ips = concat(local.whitelist_ips, local.agent_cidrs)
 }
 
 resource "aws_security_group" "gocd_sg" {
@@ -50,14 +48,14 @@ resource "aws_security_group" "gocd_server" {
     from_port   = 8153
     to_port     = 8154
     protocol    = "tcp"
-    cidr_blocks = concat(split(",", "${data.aws_ssm_parameter.inbound_ips.value}"), ["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = concat(["10.0.0.0/8", "${var.my_ip}/32"])
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = concat(split(",", "${data.aws_ssm_parameter.inbound_ips.value}"), ["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = concat(["10.0.0.0/8", "${var.my_ip}/32"])
   }
 
   # SSH for provisioning from whitelisted IP
@@ -65,7 +63,7 @@ resource "aws_security_group" "gocd_server" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = concat(split(",", "${data.aws_ssm_parameter.inbound_ips.value}"), ["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = concat(["10.0.0.0/8", "${var.my_ip}/32"])
   }
 
   egress {
