@@ -18,21 +18,21 @@ data "aws_ami" "amazon-linux-2" {
 data "aws_caller_identity" "current" {}
 
 data "aws_ssm_parameter" "root_domain" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/root_domain"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-root-domain"
 }
 
 data "aws_ssm_parameter" "agent_image_tag" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_image_tag"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-image-tag"
 }
 
 data "aws_ssm_parameter" "agent_instance_profile" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_instance_profile"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-instance-profile"
 }
 
 data "aws_ssm_parameter" "agent_keypair_name" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_keypair_name"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-keypair-name"
 }
 
 data "aws_ssm_parameter" "agent_sg_id" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_sg_id"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-sg-id"
 }

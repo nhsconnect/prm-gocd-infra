@@ -73,7 +73,7 @@ Run the following command with the profile configured in your `~/.aws/config`:
 ### Run `assume-role` with dojo:
 Run the following command with the profile configured in your `~/.aws/config`:
 
-`eval $(dojo "echo <mfa-code> | assume-role admin"`
+`eval $(dojo "echo <mfa-code> | assume-role admin")`
 
 Run the following command to confirm the role was assumed correctly:
 

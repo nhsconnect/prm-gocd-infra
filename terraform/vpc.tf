@@ -8,13 +8,13 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_ssm_parameter" "vpc_id" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/vpc_id"
+  name = "/repo/${var.environment}/prm-deductions-base-infra/output/gocd-vpc-id"
   type  = "String"
   value = aws_vpc.main.id
 }
 
 resource "aws_ssm_parameter" "cidr_block" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/cidr_block"
+  name = "/repo/${var.environment}/prm-deductions-base-infra/output/gocd-cidr-block"
   type  = "String"
   value = var.vpc_cidr_block
 }

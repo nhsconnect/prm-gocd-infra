@@ -18,31 +18,31 @@ module "local-agents" {
 }
 
 resource "aws_ssm_parameter" "root_domain" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/root_domain"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-root-domain"
   type  = "String"
   value = var.root_domain
 }
 
 resource "aws_ssm_parameter" "agent_image_tag" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_image_tag"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-image-tag"
   type  = "String"
   value = var.agent_image_tag
 }
 
 resource "aws_ssm_parameter" "agent_instance_profile" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_instance_profile"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-instance-profile"
   type  = "String"
   value = aws_iam_instance_profile.gocd_agent.name
 }
 
 resource "aws_ssm_parameter" "agent_keypair_name" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_keypair_name"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-keypair-name"
   type  = "String"
   value = aws_key_pair.gocd.key_name
 }
 
 resource "aws_ssm_parameter" "agent_sg_id" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/agent_sg_id"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-sg-id"
   type  = "String"
   value = aws_security_group.go_agent_sg.id
 }

@@ -24,7 +24,7 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_ssm_parameter" "route_table_id" {
-  name = "/NHS/deductions-${data.aws_caller_identity.current.account_id}/gocd-${var.environment}/route_table_id"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-route-table-id"
   type  = "String"
   value = aws_route_table.public.id
 }
