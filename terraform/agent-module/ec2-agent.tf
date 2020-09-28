@@ -33,7 +33,7 @@ resource "aws_instance" "gocd_agent" {
 }
 
 resource "aws_ssm_parameter" "agent_ips" {
-  name = "/repo/${var.environment}/prm-deductions-base-infra/output/gocd-agent-ips"
+  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-ips"
   type = "String"
   value = join(",", aws_instance.gocd_agent.*.public_ip)
 }
