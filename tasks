@@ -121,24 +121,17 @@ case "${command}" in
       ;;
   _provision)
     check_env
-    if [ -z "${GOOGLE_CHAT_WEBHOOK}" ]; then
-      echo "GOOGLE_CHAT_WEBHOOK must be set"
-      exit 5
-    fi
     sudo pip install yasha #FIXME: add yasha in the dojo image
     yasha --variables terraform/tf-out.json -o ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars
     cat << EOF > ansible/group_vars/${NHS_ENVIRONMENT}.yml
 # This file is generated
 env: ${NHS_ENVIRONMENT}
-google_chat_webhook: ${GOOGLE_CHAT_WEBHOOK}
 EOF
     ansible-playbook -i ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/site.yml
     ;;
   provision)
     check_env
-    GOOGLE_CHAT_WEBHOOK=$(get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/prm-gocd-infra/user-input/google-chat-webhook")
-    export GOOGLE_CHAT_WEBHOOK
     dojo -c Dojofile-ansible "./tasks _provision"
     ;;
   generate_ssl_certs)
