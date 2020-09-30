@@ -12,6 +12,10 @@ data "aws_iam_policy_document" "instance-assume-role-policy" {
 resource "aws_iam_role" "gocd_server" {
   name                 = "gocd_server-${var.environment}"
   assume_role_policy   = data.aws_iam_policy_document.instance-assume-role-policy.json
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_iam_instance_profile" "gocd_server" {
@@ -22,6 +26,10 @@ resource "aws_iam_instance_profile" "gocd_server" {
 resource "aws_iam_role" "gocd_agent" {
   name                 = "gocd_agent-${var.environment}"
   assume_role_policy   = data.aws_iam_policy_document.instance-assume-role-policy.json
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_iam_instance_profile" "gocd_agent" {

@@ -35,6 +35,10 @@ resource "aws_ssm_parameter" "agent_ips" {
   name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-ips"
   type = "String"
   value = join(",", aws_instance.gocd_agent.*.public_ip)
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 data "template_file" "agent_userdata" {

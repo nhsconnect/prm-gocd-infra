@@ -21,28 +21,53 @@ resource "aws_ssm_parameter" "root_domain" {
   name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-root-domain"
   type  = "String"
   value = var.root_domain
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_ssm_parameter" "agent_image_tag" {
   name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-image-tag"
   type  = "String"
   value = var.agent_image_tag
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_ssm_parameter" "agent_instance_profile" {
   name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-instance-profile"
   type  = "String"
   value = aws_iam_instance_profile.gocd_agent.name
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_ssm_parameter" "agent_keypair_name" {
   name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-keypair-name"
   type  = "String"
   value = aws_key_pair.gocd.key_name
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
 
 resource "aws_ssm_parameter" "agent_sg_id" {
   name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-agent-sg-id"
   type  = "String"
   value = aws_security_group.go_agent_sg.id
+
+  tags = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
 }
