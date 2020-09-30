@@ -8,6 +8,11 @@ variable "az" {
   default = "eu-west-2a"
 }
 
+variable "repo_name" {
+  type = string
+  default = "prm-gocd-infra"
+}
+
 variable "agent_resources" {}
 
 variable "subnet_id" {}
