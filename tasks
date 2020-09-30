@@ -137,7 +137,7 @@ EOF
     ;;
   provision)
     check_env
-    GOOGLE_CHAT_WEBHOOK=$(get_aws_ssm_secret "/NHS/GoCD/${NHS_ENVIRONMENT}/google-chat-webhook")
+    GOOGLE_CHAT_WEBHOOK=$(get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/prm-gocd-infra/user-input/google-chat-webhook")
     export GOOGLE_CHAT_WEBHOOK
     dojo -c Dojofile-ansible "./tasks _provision"
     ;;
