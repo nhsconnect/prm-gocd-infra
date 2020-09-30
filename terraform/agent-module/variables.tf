@@ -2,6 +2,11 @@ variable "root_domain" {
   default = "patient-deductions.nhs.uk"
 }
 
+variable "repo_name" {
+  type = string
+  default = "prm-gocd-infra"
+}
+
 variable "agent_image_tag" {}
 
 variable "agent_instance_profile" {}

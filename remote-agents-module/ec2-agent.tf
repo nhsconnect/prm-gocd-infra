@@ -24,6 +24,7 @@ resource "aws_instance" "gocd_agent" {
 
   tags = {
     Name        = "GoCD agent ${count.index} VM ${var.environment}: ${var.agent_resources}"
+    CreatedBy = var.repo_name
     Environment = var.environment
   }
 

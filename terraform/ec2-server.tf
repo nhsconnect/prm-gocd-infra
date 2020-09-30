@@ -13,9 +13,8 @@ resource "aws_instance" "gocd_server" {
 
   tags = {
     Name        = "GoCD server VM ${var.environment}"
-    CreatedBy   = "prm-gocd-infra"
+    CreatedBy   = var.repo_name
     Environment = var.environment
-    Service     = "GoCD"
   }
 
   connection {
@@ -33,6 +32,8 @@ resource "aws_instance" "gocd_server" {
 resource "aws_ebs_volume" "gocd_db" {
   tags = {
     Name = "GoCD DB ${var.environment} data and artifacts"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
   }
   availability_zone = var.az
   size              = var.gocd_db_volume_size

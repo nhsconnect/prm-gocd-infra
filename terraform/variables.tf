@@ -15,6 +15,11 @@ variable "region" {
   default = "eu-west-2"
 }
 
+variable "repo_name" {
+  type = string
+  default = "prm-gocd-infra"
+}
+
 variable "server_flavor" {
   default = "t3a.small" # NB server needs about 2GB minimum RAM
 }

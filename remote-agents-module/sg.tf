@@ -23,5 +23,7 @@ resource "aws_security_group" "go_agent_sg" {
 
   tags = {
     Name        = "Security group for GoCD agent VM"
+    CreatedBy = var.repo_name
+    Environment = var.environment
   }
 }

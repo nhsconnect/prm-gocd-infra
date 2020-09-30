@@ -6,5 +6,7 @@ resource "aws_subnet" "public-subnet" {
 
   tags = {
     Name = "GoCD public subnet"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
   }
 }

@@ -26,7 +26,8 @@ resource "aws_route53_zone" "private" {
 
   tags = {
     Name      = "Private DNS zone for ${var.environment} GoCD"
-    CreatedBy = "prm-gocd-infra"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
   }
 
   lifecycle {

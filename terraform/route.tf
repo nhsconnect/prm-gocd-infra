@@ -8,6 +8,8 @@ resource "aws_route_table" "public" {
 
   tags = {
     Name = "GoCD-${var.environment}-public"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
   }
 
   lifecycle {

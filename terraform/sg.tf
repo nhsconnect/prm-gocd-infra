@@ -35,6 +35,8 @@ resource "aws_security_group" "gocd_sg" {
 
   tags = {
     Name = "GoCD public access"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
   }
 }
 
@@ -75,7 +77,7 @@ resource "aws_security_group" "gocd_server" {
 
   tags = {
     Name        = "Security group for GoCD server VM"
-    CreatedBy   = "prm-gocd-infra"
+    CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }
@@ -104,7 +106,7 @@ resource "aws_security_group" "go_agent_sg" {
 
   tags = {
     Name        = "Security group for GoCD agent VM"
-    CreatedBy   = "prm-gocd-infra"
+    CreatedBy   = var.repo_name
     Environment = var.environment
   }
 }

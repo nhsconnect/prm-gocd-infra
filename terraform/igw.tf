@@ -3,6 +3,8 @@ resource "aws_internet_gateway" "igw" {
 
   tags = {
     Name = "GoCD ${var.environment} gateway"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
   }
 }
 #TODO: use NAT and private subnet instead of internet gateway
