@@ -107,19 +107,19 @@ NHS_ENVIRONMENT=prod ./tasks tf_apply
 
 Agent's images are built and pushed manually, dockerfiles are versioned at [nhsconnect/prm-docker-gocd-agent](https://github.com/nhsconnect/prm-docker-gocd-agent).
 
-## Google Chat notification setup
+## Google Chat notification setup for GoCD
 - `git clone https://github.com/susmithasrimani/gocd-google-chat-build-notifier.git`
 - `cd gocd-google-chat-build-notifier`
 - `./gradlew uberJar`
 - Make sure you can `ssh` into GoCD server
 - `scp build/libs/gocd-google-chat-build-notifier-uber.jar <user>@<gocd-server-ip>:/var/gocd-data/data/plugins/external/`
 - Go back to `prm-gocd-infra`
-- Make sure you've assumed the AWS role with elevated permissions 
+- Make sure you've assumed the AWS role with elevated permissions
 - `./tasks provision`
-- Reboot the GoCD server EC2 instance
+- Reboot the GoCD server EC2 instance, preferably by restarting docker instance on the server you `ssh`'ed into
 - Go to [GoCD plugins page](https://prod.gocd.patient-deductions.nhs.uk/go/admin/plugins)
 - Click on the cogwheel next to the Google Chat Build Notifier plugin
-- Paste the Google Chat webhook token into `Webhook URL` field
+- Paste the Google Chat webhook token into `Webhook URL` field. You can find Google Chat webhook token in the `NHS - PRM Build Failures` room at `Manage webhooks` option.
 
 ## TODO
 
