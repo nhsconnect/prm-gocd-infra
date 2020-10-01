@@ -39,7 +39,7 @@ resource "aws_route53_zone" "private" {
 }
 
 resource "aws_ssm_parameter" "gocd_zone_id" {
-  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-route53-zone-id"
+  name = "/repo/${var.environment}/output/${var.repo_name}/gocd-route53-zone-id"
   type = "String"
   value = aws_route53_zone.private.id
   tags = {

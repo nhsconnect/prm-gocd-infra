@@ -14,11 +14,11 @@ data "aws_ami" "amazon-linux-2" {
 }
 
 data "aws_ssm_parameter" "public_zone_id" {
-    name = "/repo/prm-deductions-base-infra/output/root-zone-id"
+    name = "/repo/output/prm-deductions-base-infra/root-zone-id"
 }
 
 data "aws_caller_identity" "current" {}
 
 # data "aws_ssm_parameter" "dynamic_gocd_sg" {
-#   name = "/repo/${var.environment}/prm-deductions-base-infra/output/gocd-sg"
+#   name = "/repo/${var.environment}/output/prm-deductions-base-infra/gocd-sg"
 # }

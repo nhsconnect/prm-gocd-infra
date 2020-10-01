@@ -18,7 +18,11 @@ module "local-agents" {
 }
 
 resource "aws_ssm_parameter" "root_domain" {
+<<<<<<< HEAD
   name = "/repo/${var.environment}/${var.repo_name}/output/gocd-root-domain"
+=======
+  name = "/repo/${var.environment}/output/prm-gocd-infra/gocd-root-domain"
+>>>>>>> [PRMT-1121] Move output to match the ssm keys convention
   type  = "String"
   value = var.root_domain
 
@@ -29,7 +33,7 @@ resource "aws_ssm_parameter" "root_domain" {
 }
 
 resource "aws_ssm_parameter" "agent_image_tag" {
-  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-agent-image-tag"
+  name = "/repo/${var.environment}/output/${var.repo_name}/gocd-agent-image-tag"
   type  = "String"
   value = var.agent_image_tag
 
@@ -40,7 +44,7 @@ resource "aws_ssm_parameter" "agent_image_tag" {
 }
 
 resource "aws_ssm_parameter" "agent_instance_profile" {
-  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-agent-instance-profile"
+  name = "/repo/${var.environment}/output/${var.repo_name}/gocd-agent-instance-profile"
   type  = "String"
   value = aws_iam_instance_profile.gocd_agent.name
 
@@ -51,7 +55,7 @@ resource "aws_ssm_parameter" "agent_instance_profile" {
 }
 
 resource "aws_ssm_parameter" "agent_keypair_name" {
-  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-agent-keypair-name"
+  name = "/repo/${var.environment}/output/${var.repo_name}/gocd-agent-keypair-name"
   type  = "String"
   value = aws_key_pair.gocd.key_name
 
@@ -62,7 +66,7 @@ resource "aws_ssm_parameter" "agent_keypair_name" {
 }
 
 resource "aws_ssm_parameter" "agent_sg_id" {
-  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-agent-sg-id"
+  name = "/repo/${var.environment}/output/${var.repo_name}/gocd-agent-sg-id"
   type  = "String"
   value = aws_security_group.go_agent_sg.id
 
