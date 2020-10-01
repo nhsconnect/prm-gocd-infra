@@ -18,11 +18,7 @@ module "local-agents" {
 }
 
 resource "aws_ssm_parameter" "root_domain" {
-<<<<<<< HEAD
-  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-root-domain"
-=======
-  name = "/repo/${var.environment}/output/prm-gocd-infra/gocd-root-domain"
->>>>>>> [PRMT-1121] Move output to match the ssm keys convention
+  name = "/repo/${var.environment}/output/${var.repo_name}/gocd-root-domain"
   type  = "String"
   value = var.root_domain
 
