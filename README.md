@@ -81,10 +81,10 @@ Run the following command to confirm the role was assumed correctly:
 
 ## Deployment
 
-You can pick which deployment to manage by setting environment variable `NHS_ENVIRONMENT`.
+You can pick which deployment to manage by setting environment variable `GOCD_ENVIRONMENT`.
 To make changes in production, set
 ```
-export NHS_ENVIRONMENT=prod
+export GOCD_ENVIRONMENT=prod
 ```
 
 To make changes in this deployment, run:
@@ -101,8 +101,8 @@ To provision GoCD server use `./tasks provision`.
 
 Updating only the agents can be done with:
 ```
-NHS_ENVIRONMENT=prod ./tasks tf_plan_agents create
-NHS_ENVIRONMENT=prod ./tasks tf_apply
+GOCD_ENVIRONMENT=prod ./tasks tf_plan_agents create
+GOCD_ENVIRONMENT=prod ./tasks tf_apply
 ```
 
 Agent's images are built and pushed manually, dockerfiles are versioned at [nhsconnect/prm-docker-gocd-agent](https://github.com/nhsconnect/prm-docker-gocd-agent).

@@ -20,12 +20,12 @@ function tf_plan {
   operation=$1
 
   cd terraform/
-  terraform init -reconfigure -backend-config key=nhs-${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate
+  terraform init -reconfigure -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
-    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan" $2
+    terraform plan -var-file=${GOCD_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan" $2
   elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan" $2 -destroy
+    terraform plan -var-file=${GOCD_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan" $2 -destroy
   else
     echo "Unknown operation (should be create or destroy), got: ${operation}"
     exit 1
@@ -34,42 +34,42 @@ function tf_plan {
 
 function tf_apply {
   cd terraform/
-  terraform init -backend-config key=nhs-${NHS_SERVICE}-${NHS_ENVIRONMENT}/terraform.tfstate
+  terraform init -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
   terraform get # modules
   terraform apply nhs_deployment.tfplan
   terraform output -json > tf-out.json
 }
 
 function check_env {
-  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
-    echo "Must set NHS_ENVIRONMENT"
+  if [[ -z "${GOCD_ENVIRONMENT}" ]]; then
+    echo "Must set GOCD_ENVIRONMENT"
     exit 1
   fi
 }
 
 function generate_ssh_key {
-  secret_id="/repo/${NHS_ENVIRONMENT}/user-input/gocd-id-rsa"
+  secret_id="/repo/${GOCD_ENVIRONMENT}/user-input/gocd-id-rsa"
   mkdir -p terraform/ssh/
-  if [[ ! -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" ]]; then
+  if [[ ! -f "terraform/ssh/gocd-${GOCD_ENVIRONMENT}" ]]; then
     #TODO check aws authentication
     set +e
     id_rsa=$(aws ssm get-parameter --with-decryption --region $AWS_REGION --name $secret_id | jq -r ".Parameter.Value")
     if [[ $? == 0 ]]; then
-      echo "$id_rsa" > terraform/ssh/gocd-${NHS_ENVIRONMENT}
+      echo "$id_rsa" > terraform/ssh/gocd-${GOCD_ENVIRONMENT}
     else
       set -e
-      ssh-keygen -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" -q -N ""
+      ssh-keygen -f "terraform/ssh/gocd-${GOCD_ENVIRONMENT}" -q -N ""
     fi
     set -e
   fi
-  chmod 0600 terraform/ssh/gocd-${NHS_ENVIRONMENT}
-  ssh-keygen -y -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" > "terraform/ssh/gocd-${NHS_ENVIRONMENT}.pub"
+  chmod 0600 terraform/ssh/gocd-${GOCD_ENVIRONMENT}
+  ssh-keygen -y -f "terraform/ssh/gocd-${GOCD_ENVIRONMENT}" > "terraform/ssh/gocd-${GOCD_ENVIRONMENT}.pub"
   aws ssm put-parameter \
    --region $AWS_REGION \
    --name $secret_id \
    --type SecureString \
    --overwrite \
-   --value "`cat terraform/ssh/gocd-${NHS_ENVIRONMENT}`"
+   --value "`cat terraform/ssh/gocd-${GOCD_ENVIRONMENT}`"
 }
 
 command="$1"
@@ -122,13 +122,13 @@ case "${command}" in
   _provision)
     check_env
     sudo pip install yasha #FIXME: add yasha in the dojo image
-    yasha --variables terraform/tf-out.json -o ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
+    yasha --variables terraform/tf-out.json -o ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars
-    cat << EOF > ansible/group_vars/${NHS_ENVIRONMENT}.yml
+    cat << EOF > ansible/group_vars/${GOCD_ENVIRONMENT}.yml
 # This file is generated
-env: ${NHS_ENVIRONMENT}
+env: ${GOCD_ENVIRONMENT}
 EOF
-    ansible-playbook -i ansible/inventory/${NHS_ENVIRONMENT}.ini ansible/site.yml
+    ansible-playbook -i ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/site.yml
     ;;
   provision)
     check_env
@@ -143,11 +143,11 @@ EOF
      certbot/dns-route53:v0.38.0 certonly \
      --keep-until-expiring  --register-unsafely-without-email \
      --dns-route53 --agree-tos  \
-     -d ${NHS_ENVIRONMENT}.gocd.patient-deductions.nhs.uk
+     -d ${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk
     ;;
   sync_certs)
     check_env
-    scp -i terraform/ssh/gocd-${NHS_ENVIRONMENT} -r letsencrypt/ "ec2-user@${NHS_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~/letsencrypt"
+    scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -r letsencrypt/ "ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~/letsencrypt"
     ;;
   *)
       echo "Invalid command: '${command}'"
