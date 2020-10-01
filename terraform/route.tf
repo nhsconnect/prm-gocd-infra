@@ -26,7 +26,7 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_ssm_parameter" "route_table_id" {
-  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-route-table-id"
+  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-route-table-id"
   type  = "String"
   value = aws_route_table.public.id
   tags = {

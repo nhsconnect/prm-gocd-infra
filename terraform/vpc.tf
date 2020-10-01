@@ -10,7 +10,7 @@ resource "aws_vpc" "main" {
 }
 
 resource "aws_ssm_parameter" "vpc_id" {
-  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-vpc-id"
+  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-vpc-id"
   type  = "String"
   value = aws_vpc.main.id
 
@@ -21,7 +21,7 @@ resource "aws_ssm_parameter" "vpc_id" {
 }
 
 resource "aws_ssm_parameter" "cidr_block" {
-  name = "/repo/${var.environment}/prm-gocd-infra/output/gocd-cidr-block"
+  name = "/repo/${var.environment}/${var.repo_name}/output/gocd-cidr-block"
   type  = "String"
   value = var.vpc_cidr_block
 
