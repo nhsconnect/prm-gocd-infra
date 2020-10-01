@@ -48,7 +48,7 @@ function check_env {
 }
 
 function generate_ssh_key {
-  secret_id="/repo/${NHS_ENVIRONMENT}/prm-gocd-infra/user-input/gocd-id-rsa"
+  secret_id="/repo/${NHS_ENVIRONMENT}/user-input/gocd-id-rsa"
   mkdir -p terraform/ssh/
   if [[ ! -f "terraform/ssh/gocd-${NHS_ENVIRONMENT}" ]]; then
     #TODO check aws authentication
