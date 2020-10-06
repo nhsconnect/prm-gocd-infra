@@ -12,6 +12,13 @@ resource "aws_instance" "gocd_agent" {
     volume_size           = var.gocd_agent_volume_size
     delete_on_termination = true
   }
+
+  volume_tags = {
+    Name        = "GoCD agent ${count.index} VM ${var.environment}: ${var.agent_resources}"
+    CreatedBy = var.repo_name
+    Environment = var.environment
+  }
+  
   availability_zone = var.az
 
   subnet_id                   = var.subnet_id

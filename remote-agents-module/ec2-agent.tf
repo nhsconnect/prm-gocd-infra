@@ -12,8 +12,8 @@ resource "aws_instance" "gocd_agent" {
     volume_size           = var.gocd_agent_volume_size
     delete_on_termination = true
   }
-  availability_zone = var.az
 
+  availability_zone = var.az
   subnet_id                   = var.subnet_id
   associate_public_ip_address = var.allocate_public_ip # required for internet access until we have nat
   #TODO use NAT for agents
@@ -23,6 +23,12 @@ resource "aws_instance" "gocd_agent" {
   ]
 
   tags = {
+    Name        = "GoCD agent ${count.index} VM ${var.environment}: ${var.agent_resources}"
+    CreatedBy = var.repo_name
+    Environment = var.environment
+  }
+
+  volume_tags = {
     Name        = "GoCD agent ${count.index} VM ${var.environment}: ${var.agent_resources}"
     CreatedBy = var.repo_name
     Environment = var.environment
