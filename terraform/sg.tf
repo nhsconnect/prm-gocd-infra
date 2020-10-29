@@ -20,26 +20,6 @@ locals {
   allowed_public_ips = concat(local.whitelist_ips, local.agent_cidrs)
 }
 
-resource "aws_security_group" "gocd_sg" {
-  name        = "GoCD public access"
-  description = "Security group for GoCD public access"
-  vpc_id      = aws_vpc.main.id
-
-  # HTTPS from whitelisted IP
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = local.allowed_public_ips
-  }
-
-  tags = {
-    Name = "GoCD public access"
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
-}
-
 resource "aws_security_group" "gocd_server" {
   name        = "gocd-${var.environment}"
   description = "GoCD server ${var.environment}"
