@@ -43,19 +43,4 @@ resource "aws_volume_attachment" "db_att" {
   volume_id   = aws_ebs_volume.gocd_db.id
   instance_id = aws_instance.gocd_server.id
   device_name = "/dev/sdf"
-
-  # Stop DB and umount the filesystem before detaching the volume
-  provisioner "remote-exec" {
-    connection {
-      type     = "ssh"
-      user     = local.remote_user
-      private_key = local.private_key
-      host     = aws_instance.gocd_server.public_ip
-    }
-    when    = destroy
-    inline = [
-      "sudo docker stop db || true",
-      "sudo umount /var/gocd-data || true"
-    ]
-  }
 }
