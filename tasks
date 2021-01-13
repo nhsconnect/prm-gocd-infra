@@ -128,7 +128,7 @@ case "${command}" in
 # This file is generated
 env: ${GOCD_ENVIRONMENT}
 EOF
-    ansible-playbook -i ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/site.yml
+    sudo ansible-playbook -i ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/site.yml
     ;;
   provision)
     check_env

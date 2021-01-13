@@ -22,3 +22,11 @@ data "aws_caller_identity" "current" {}
 # data "aws_ssm_parameter" "dynamic_gocd_sg" {
 #   name = "/repo/${var.environment}/output/prm-deductions-base-infra/gocd-sg"
 # }
+
+data "aws_ssm_parameter" "gocd_db_username" {
+  name = "/repo/${var.environment}/user-input/gocd-db-username"
+}
+
+data "aws_ssm_parameter" "gocd_db_password" {
+  name = "/repo/${var.environment}/user-input/gocd-db-password"
+}

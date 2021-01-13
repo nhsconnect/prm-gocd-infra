@@ -90,3 +90,22 @@ resource "aws_security_group" "go_agent_sg" {
     Environment = var.environment
   }
 }
+
+resource "aws_security_group" "db_sg" {
+    name        = "db-sg"
+    vpc_id      = aws_vpc.main.id
+
+    ingress {
+        description     = "Allow traffic from GoCD server to the db"
+        protocol        = "tcp"
+        from_port       = "5432"
+        to_port         = "5432"
+        security_groups = [aws_security_group.gocd_server.id]
+    }
+
+    tags = {
+        Name = "Security group for GoCD db"
+        CreatedBy   = var.repo_name
+        Environment = var.environment
+    }
+}
