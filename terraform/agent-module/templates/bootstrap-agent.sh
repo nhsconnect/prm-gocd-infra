@@ -16,7 +16,7 @@ fi
 
 sudo yum install -y python python-pip
 
-mkdir -p /var/go-agent/docker /var/go-agent/workspace
+mkdir -p /var/go-agent/docker /var/go-agent/workspace /var/go-agent/godata
 
 # Relies on VM having an instance profile with gocd role which has permissions to pull from ECR
 # login into AWS ECR registry
@@ -34,7 +34,12 @@ docker run -d \
   -e GOCD_ENVIRONMENT=$GOCD_ENVIRONMENT \
   -e AWS_REGION=$AWS_REGION \
   -e DOCKER_OPTS="--storage-driver overlay2" \
-  -e GO_SERVER_URL="https://$GOCD_ENVIRONMENT.gocd.patient-deductions.nhs.uk:8154/go" \
+  -e GO_SERVER_URL="https://$GOCD_ENVIRONMENT.gocd.patient-deductions.nhs.uk:8153/go" \
+  -e AGENT_BOOTSTRAPPER_ARGS="-sslVerificationMode NONE" \
+  -e AWS_SECRET_STORE_PATH="repo/$GOCD_ENVIRONMENT/user-input" \
+  -e GOCD_SKIP_SECRETS="true" \
+  -e SECRET_STORE="aws" \
+  -v "/var/go-agent/godata:/godata" \
   -v "/var/go-agent/docker:/var/lib/docker" \
   -v "/var/go-agent/workspace:/var/lib/go-agent/pipelines" \
   -v "/etc/localtime:/etc/localtime:ro" \
