@@ -3,6 +3,7 @@ resource "aws_instance" "gocd_server" {
   instance_type         = var.server_flavor
   availability_zone     = var.az
   subnet_id             = local.subnet_id
+  ebs_optimized         = true
   vpc_security_group_ids = [
     aws_security_group.gocd_server.id
   ]
