@@ -36,6 +36,14 @@
     src: gchat_notif.conf.j2
     dest: /var/gocd-data/home/gchat_notif.conf
 
+- name: Configure a properties file on the GoCD server container
+  template:
+    src: db.properties-template.j2
+    dest: /var/gocd-data/data/config/db.properties
+    owner: "{{ ansible_user }}"
+    group: root
+    mode: 0644
+
 - name: Setup GoCD server container
   docker_container:
     name: server
