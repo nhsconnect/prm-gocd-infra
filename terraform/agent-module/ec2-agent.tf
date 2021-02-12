@@ -18,7 +18,7 @@ resource "aws_instance" "gocd_agent" {
     CreatedBy = var.repo_name
     Environment = var.environment
   }
-  
+
   availability_zone = var.az
 
   subnet_id                   = var.subnet_id
@@ -36,16 +36,6 @@ resource "aws_instance" "gocd_agent" {
   }
 
   user_data            = data.template_file.agent_userdata.rendered
-}
-
-resource "aws_ssm_parameter" "agent_ips" {
-  name = "/repo/${var.environment}/output/${var.repo_name}/gocd-agent-ips"
-  type = "String"
-  value = join(",", aws_instance.gocd_agent.*.public_ip)
-  tags = {
-    CreatedBy   = var.repo_name
-    Environment = var.environment
-  }
 }
 
 data "template_file" "agent_userdata" {

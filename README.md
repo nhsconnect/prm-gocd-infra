@@ -2,7 +2,7 @@
 
 Setup of GoCD deployment for NHS repository team.
 
-Server dashboard is accessible at `https://prod.gocd.patient-deductions.nhs.uk` . The client IPs are whitelisted and you need to authenticate using Github OAuth.
+Server dashboard is accessible at `https://prod.gocd.patient-deductions.nhs.uk` only over VPN. You need to authenticate using Github OAuth.
 
 # Architecture
 
@@ -19,13 +19,6 @@ Other agents can be deployed in specific networks. The `remote-agents-module` te
 Each agent has Docker and Dojo available, which makes it possible to build any project as long as you produce a docker image with required tools first. For more details see the [Dojo readme](https://github.com/kudulab/dojo).
 
 # Deployment/Lifecycle
-
-## Prerequisites
-
-- Add your IP address to SSM `inbound ips` parameter.
-- Run all the deployment steps we see below from the same machine in order to avoid issue with ssh keys.
-- Make sure your AWS profile matches the profile in `provider.tf`.
-- Make sure you always run `tf_plan` before running `tf_apply`.
 
 ## Access to AWS
 
@@ -61,7 +54,7 @@ aws_access_key_id = <your-aws-access-key-id>
 aws_secret_access_key = <your-aws-secret-access-key>
 ```
 
-## Assume role with elevated permissions 
+## Assume role with elevated permissions
 
 ### Install `assume-role` locally:
 `brew install remind101/formulae/assume-role`
@@ -87,7 +80,7 @@ When creating the new ssm keys, please follow the agreed convention as per the d
 * all parts of the keys are lower case
 * the words are separated by dashes (`kebab case`)
 * `env` is optional
-  
+
 ### Design:
 Please follow this design to ensure the ssm keys are easy to maintain and navigate through:
 
@@ -142,10 +135,6 @@ Agent's images are built and pushed manually, dockerfiles are versioned at [nhsc
 ## TODO
 
 Some more automation to do:
- - agent's public IPs were whitelisted manually so that they could reach LBs of some of our services. We might want to have internal LBs anyway.
  - SSL certs are currently issued manually from workstation and sent over to the GoCD server. It could be automated on the GoCD machine.
  - Agent's auto-registration key was placed in SSM store manually. This is a one-time operation.
-
-`Dojofile-ansible` uses a public open-source image. It should be forked and managed by repository team.
-
-Agents could be placed behind a NAT.
+ - Agents could be placed behind a NAT.

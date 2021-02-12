@@ -30,6 +30,7 @@
   with_items:
     - /var/gocd-data/data
     - /var/gocd-data/home
+    - /var/gocd-data/data/config
 
 - name: Configure Google Chat plugin
   template:
@@ -43,6 +44,8 @@
     owner: "{{ ansible_user }}"
     group: root
     mode: 0644
+
+#FIXME: ensure db is created
 
 - name: Setup GoCD server container
   docker_container:

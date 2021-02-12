@@ -19,13 +19,16 @@ function get_aws_ssm_secret {
 function tf_plan {
   operation=$1
 
+  my_ip=$(curl icanhazip.com)
+  echo "Running terraform plan with added security group ingress from $my_ip"
+
   cd terraform/
   terraform init -reconfigure -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
-    terraform plan -var-file=${GOCD_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan" $2
+    terraform plan -var my_ip=$my_ip -var-file=${GOCD_ENVIRONMENT}.tfvars -out="${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan" $2
   elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var-file=${GOCD_ENVIRONMENT}.tfvars -out="nhs_deployment.tfplan" $2 -destroy
+    terraform plan -var my_ip=$my_ip -var-file=${GOCD_ENVIRONMENT}.tfvars -out="${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan" $2 -destroy
   else
     echo "Unknown operation (should be create or destroy), got: ${operation}"
     exit 1
@@ -36,7 +39,7 @@ function tf_apply {
   cd terraform/
   terraform init -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
   terraform get # modules
-  terraform apply nhs_deployment.tfplan
+  terraform apply ${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan
   terraform output -json > tf-out.json
 }
 
@@ -96,7 +99,7 @@ case "${command}" in
       dojo "./tasks _tf_plan $2"
       ;;
   _tf_plan_agents)
-      tf_plan "$2" "-target module.local-agents.aws_ssm_parameter.agent_ips"
+      tf_plan "$2" "-target module.local-agents.aws_instance.gocd_agent"
       ;;
   tf_plan_agents)
       check_env
