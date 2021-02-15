@@ -45,7 +45,39 @@
     group: root
     mode: 0644
 
-#FIXME: ensure db is created
+- name: Install gcc package
+  yum:
+    name: gcc
+
+- name: Install postgresql-devel package
+  yum:
+    name: postgresql-devel
+
+- name: Install psycopg2 python package
+  pip:
+    name: psycopg2
+
+- name: create the main db
+  postgresql_db:
+    name: gocd
+    owner: "{{ db_user }}"
+    login_password: "{{ db_password }}"
+    login_user: "{{ db_user }}"
+    login_host: "{{ db_url }}"
+    encoding: UTF8
+    lc_collate: 'en_US.UTF-8'
+    lc_ctype: 'en_US.UTF-8'
+
+- name: create the analytics db
+  postgresql_db:
+    name: gocd_analytics
+    owner: "{{ db_user }}"
+    login_password: "{{ db_password }}"
+    login_user: "{{ db_user }}"
+    login_host: "{{ db_url }}"
+    encoding: UTF8
+    lc_collate: 'en_US.UTF-8'
+    lc_ctype: 'en_US.UTF-8'
 
 - name: Setup GoCD server container
   docker_container:
