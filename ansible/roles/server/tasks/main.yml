@@ -31,6 +31,7 @@
     - /var/gocd-data/data
     - /var/gocd-data/home
     - /var/gocd-data/data/config
+    - /var/gocd-data/data/plugins/external
 
 - name: Configure Google Chat plugin
   template:
