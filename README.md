@@ -8,6 +8,8 @@ Server dashboard is accessible at `https://prod.gocd.patient-deductions.nhs.uk` 
 
 GoCD consists of server and agents.
 
+Server data is stored in RDS database. Build artifacts are stored on a EC2 volume.
+
 The server is behind a proxy facing the internet.
 
 There are several agents running in a dedicated VPC. These are general-purpose agents to be used for building code or docker images.
@@ -17,6 +19,9 @@ Other agents can be deployed in specific networks. The `remote-agents-module` te
 ## Tools on agents
 
 Each agent has Docker and Dojo available, which makes it possible to build any project as long as you produce a docker image with required tools first. For more details see the [Dojo readme](https://github.com/kudulab/dojo).
+
+A complete spec of the agent tools is defined by [Kudulab's GoCD Agent Docker image](https://github.com/kudulab/docker-kudu-gocd-agent) which contains the actual docker file.
+
 
 # Deployment/Lifecycle
 
@@ -132,9 +137,10 @@ Agent's images are built and pushed manually, dockerfiles are versioned at [nhsc
 - Click on the cogwheel next to the Google Chat Build Notifier plugin
 - Paste the Google Chat webhook token into `Webhook URL` field. You can find Google Chat webhook token in the `NHS - PRM Build Failures` room at `Manage webhooks` option.
 
-## TODO
+## TODO & Manual steps
 
 Some more automation to do:
  - SSL certs are currently issued manually from workstation and sent over to the GoCD server. It could be automated on the GoCD machine.
+ - Connecting GoCD analytics to the RDS requires to put plugin settings via the UI
  - Agent's auto-registration key was placed in SSM store manually. This is a one-time operation.
  - Agents could be placed behind a NAT.
