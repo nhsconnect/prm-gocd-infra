@@ -85,10 +85,34 @@
     url: https://github.com/gocd/gocd-analytics-plugin/releases/download/v3.0.0-5/gocd-analytics-plugin-3.0.0-5.jar
     dest: /var/gocd-data/data/plugins/external/gocd-analytics-plugin-3.0.0-5.jar
 
+- name: Create GoCD docker build working directory
+  file:
+    path: /var/gocd-data/docker-build
+    state: directory
+    mode: 0755
+    owner: "{{ ansible_user }}"
+    group: root
+
+- name: Create Dockerfile for GoCD server image
+  template:
+    src: Dockerfile
+    dest: /var/gocd-data/docker-build/Dockerfile
+    owner: "{{ ansible_user }}"
+    group: root
+    mode: 0644
+
+- name: Build an image with postgres
+  docker_image:
+    build:
+      path: /var/gocd-data/docker-build
+    name: gocd-server
+    tag: latest
+    source: build
+
 - name: Setup GoCD server container
   docker_container:
     name: server
-    image: gocd/gocd-server:v20.10.0
+    image: gocd-server:latest
     restart_policy: always
     restart: yes
     ports:
