@@ -40,7 +40,7 @@ function tf_apply {
   terraform init -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
   terraform get # modules
   terraform apply ${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan
-  terraform output -json > tf-out.json
+  terraform output -json > tf-out-${GOCD_ENVIRONMENT}.json
 }
 
 function check_env {
@@ -125,7 +125,7 @@ case "${command}" in
   _provision)
     check_env
     sudo pip install yasha #FIXME: add yasha in the dojo image
-    yasha --variables terraform/tf-out.json -o ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
+    yasha --variables terraform/tf-out-${GOCD_ENVIRONMENT}.json -o ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars
     cat << EOF > ansible/group_vars/${GOCD_ENVIRONMENT}.yml
 # This file is generated
