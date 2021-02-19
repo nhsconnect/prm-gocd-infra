@@ -21,25 +21,21 @@ mkdir -p /var/go-agent/docker /var/go-agent/workspace /var/go-agent/godata
 # Relies on VM having an instance profile with gocd role which has permissions to pull from ECR
 # login into AWS ECR registry
 echo y | eval $(aws ecr get-login --region eu-west-2 --no-include-email)
-
 docker run -d \
   --restart=always \
   --net host \
   --name gocd-agent \
   --privileged \
-  --cap-add SYS_ADMIN \
-  --security-opt apparmor:unconfined \
-  -e AGENT_HOSTNAME=$HOSTNAME \
+  -e AGENT_AUTO_REGISTER_HOSTNAME=$HOSTNAME \
   -e AGENT_AUTO_REGISTER_RESOURCES=$AGENT_RESOURCES \
-  -e GOCD_ENVIRONMENT=$GOCD_ENVIRONMENT \
   -e AWS_REGION=$AWS_REGION \
   -e DOCKER_OPTS="--storage-driver overlay2" \
   -e GO_SERVER_URL="https://$GOCD_ENVIRONMENT.gocd.patient-deductions.nhs.uk/go" \
-  -e AGENT_BOOTSTRAPPER_ARGS="-sslVerificationMode NONE" \
+  -e SECRET_STORE=aws \
+  -e AWS_SECRET_STORE_PATH=repo/$GOCD_ENVIRONMENT/user-input \
   -v "/var/go-agent/godata:/godata" \
   -v "/var/go-agent/docker:/var/lib/docker" \
   -v "/etc/localtime:/etc/localtime:ro" \
   -v "/lib/modules:/lib/modules:ro" \
   -v "/sys/fs/cgroup:/sys/fs/cgroup" \
   327778747031.dkr.ecr.eu-west-2.amazonaws.com/gocd-agent:$AGENT_IMAGE_VERSION
-
