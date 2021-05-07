@@ -103,6 +103,11 @@ To make changes in production, set
 export GOCD_ENVIRONMENT=prod
 ```
 
+To generate database credentials:
+```
+./tasks create_secrets
+```
+
 To make changes in this deployment, run:
 ```
 ./tasks tf_plan create

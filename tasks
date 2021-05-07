@@ -75,6 +75,30 @@ function generate_ssh_key {
    --value "`cat terraform/ssh/gocd-${GOCD_ENVIRONMENT}`"
 }
 
+function create_secret_ssm_param {
+  secret_id="$1"
+  value="$2"
+  set +e
+  aws ssm get-parameter --region $AWS_DEFAULT_REGION --name "$secret_id" | jq -r ".Parameter.Value" > /dev/null
+  if [[ $? == 0 ]]; then
+    echo "Secret at $secret_id already exists"
+  else
+    set -e
+    echo "Secret does not exists. Creating $secret_id"
+    aws ssm put-parameter \
+     --region $AWS_DEFAULT_REGION \
+     --name "$secret_id" \
+     --type SecureString \
+     --overwrite \
+     --value "$value"
+  fi
+}
+
+function generate_secret_ssm_param {
+  value=$(openssl rand -base64 24  | tr -d "/@\'+")
+  create_secret_ssm_param "$1" "$value"
+}
+
 command="$1"
 case "${command}" in
   _ssh_key)
@@ -137,6 +161,14 @@ EOF
     check_env
     dojo -c Dojofile-ansible "./tasks _provision"
     ;;
+  _create_secrets)
+      generate_secret_ssm_param "/repo/${GOCD_ENVIRONMENT}/user-input/gocd-db-password"
+      generate_secret_ssm_param "/repo/${GOCD_ENVIRONMENT}/user-input/gocd-db-username"
+      ;;
+  create_secrets)
+      check_env
+      dojo "./tasks _create_secrets"
+      ;;
   generate_ssl_certs)
     check_env
     docker run -ti --rm -v $PWD/letsencrypt:/etc/letsencrypt \
