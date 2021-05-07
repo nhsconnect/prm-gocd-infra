@@ -33,7 +33,7 @@ docker run -d \
   -e DOCKER_OPTS="--storage-driver overlay2" \
   -e GO_SERVER_URL="https://$GOCD_ENVIRONMENT.gocd.patient-deductions.nhs.uk/go" \
   -e SECRET_STORE=aws \
-  -e AWS_SECRET_STORE_PATH=repo/$GOCD_ENVIRONMENT/user-input \
+  -e AWS_SECRET_STORE_PATH=repo/$GOCD_ENVIRONMENT/user-input/external \
   -v "/var/go-agent/godata:/godata" \
   -v "/var/go-agent/docker:/var/lib/docker" \
   -v "/etc/localtime:/etc/localtime:ro" \
