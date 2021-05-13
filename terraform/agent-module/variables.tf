@@ -23,6 +23,8 @@ variable "allocate_public_ip" {}
 
 variable "agent_sg_id" {}
 
+variable "agent_repo_services_sg_id" {}
+
 variable "region" {
   default = "eu-west-2"
 }

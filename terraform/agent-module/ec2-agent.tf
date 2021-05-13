@@ -27,6 +27,7 @@ resource "aws_instance" "gocd_agent" {
 
   vpc_security_group_ids = [
     var.agent_sg_id,
+    var.agent_repo_services_sg_id
   ]
 
   tags = {

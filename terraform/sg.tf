@@ -91,6 +91,17 @@ resource "aws_security_group" "go_agent_sg" {
   }
 }
 
+resource "aws_security_group" "go_agent_repo_services_sg" {
+  name        = "GoCD agent into repository services"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name        = "Security group for the communication from GoCD agent to repository services"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+
 resource "aws_security_group" "db_sg" {
     name        = "db-sg"
     vpc_id      = aws_vpc.main.id
