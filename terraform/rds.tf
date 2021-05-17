@@ -1,3 +1,31 @@
+resource "aws_kms_key" "gocd_key" {
+  description             = "GoCD DB key in prod environment"
+  policy = <<EOT
+  {
+    "Version": "2012-10-17",
+    "Id": "key-default-1",
+    "Statement": [
+        {
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::327778747031:root"
+            },
+            "Action": "kms:*",
+            "Resource": "*"
+        }
+    ]
+}
+
+EOT
+  tags                    = {
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+    Name       = "prod-gocd-db"
+  }
+}
+
+
 resource "aws_rds_cluster" "db_cluster" {
     cluster_identifier      = "${var.environment}-gocd-db-cluster"
     engine                  = "aurora-postgresql"
@@ -9,7 +37,8 @@ resource "aws_rds_cluster" "db_cluster" {
     vpc_security_group_ids  = [aws_security_group.db_sg.id]
     apply_immediately       = true
     db_subnet_group_name    = aws_db_subnet_group.db_cluster_subnet_group.name
-    skip_final_snapshot = true
+    skip_final_snapshot     = true
+    storage_encrypted       = true
 
     tags = {
       CreatedBy   = var.repo_name
