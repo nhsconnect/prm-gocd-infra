@@ -12,7 +12,7 @@ function create_build_trace_id {
     export BUILD_TRACE_ID=local
   else
     git_hash=$(echo $GO_REVISION_GIT | cut -c 1-8)
-    export BUILD_TRACE_ID="gocd/$GO_PIPELINE_NAME/$GO_PIPELINE_COUNTER/$GO_STAGE_NAME/$GO_STAGE_COUNTER/$GO_JOB_NAME/$git_hash"
+    export BUILD_TRACE_ID="gocd@$GO_PIPELINE_NAME@$GO_PIPELINE_COUNTER@$GO_STAGE_NAME@$GO_STAGE_COUNTER@$GO_JOB_NAME@$git_hash"
   fi
 }
 
