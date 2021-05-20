@@ -10,3 +10,4 @@
 /ansible/inventory/*.ini
 /letsencrypt/
 /ansible/group_vars/prod.yml
+/terraform-cross-account/tf-out-*.json

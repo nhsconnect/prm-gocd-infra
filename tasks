@@ -5,6 +5,8 @@ set -Eeo pipefail
 NHS_SERVICE=gocd
 AWS_REGION=eu-west-2
 AWS_DEFAULT_REGION=$AWS_REGION
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 
 function get_aws_ssm_secret {
   secret_id=$1
@@ -35,6 +37,40 @@ function tf_plan {
   fi
 }
 
+function tf_init_cross_account {
+  check_nhs_env
+  cd ${SCRIPT_DIR}/terraform-cross-account/
+  terraform init -reconfigure \
+      -backend-config key=${NHS_SERVICE}/nhs-${NHS_ENVIRONMENT}/gocd-${GOCD_ENVIRONMENT}/terraform.tfstate \
+      -backend-config bucket="prm-deductions-${NHS_ENVIRONMENT}-terraform-state" \
+      -backend-config dynamodb_table="prm-deductions-${NHS_ENVIRONMENT}-terraform-table" \
+      -backend-config region=${AWS_REGION}
+}
+
+function tf_plan_cross_account {
+  operation=$1
+  check_nhs_env
+
+  tf_init_cross_account
+  terraform get # modules
+  if [[ "${operation}" == "create" ]]; then
+    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="cross-account-${NHS_ENVIRONMENT}.tfplan" $2
+  elif [[ "${operation}" == "destroy" ]]; then
+    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="cross-account-${NHS_ENVIRONMENT}.tfplan" $2 -destroy
+  else
+    echo "Unknown operation (should be create or destroy), got: ${operation}"
+    exit 1
+  fi
+}
+
+function tf_apply_cross_account {
+  check_nhs_env
+  tf_init_cross_account
+  terraform get # modules
+  terraform apply "cross-account-${NHS_ENVIRONMENT}.tfplan"
+  terraform output -json > tf-out-cross-account-${NHS_ENVIRONMENT}.json
+}
+
 function tf_apply {
   cd terraform/
   terraform init -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
@@ -43,9 +79,16 @@ function tf_apply {
   terraform output -json > tf-out-${GOCD_ENVIRONMENT}.json
 }
 
-function check_env {
+function check_gocd_env {
   if [[ -z "${GOCD_ENVIRONMENT}" ]]; then
     echo "Must set GOCD_ENVIRONMENT"
+    exit 1
+  fi
+}
+
+function check_nhs_env {
+  if [[ -z "${NHS_ENVIRONMENT}" ]]; then
+    echo "Must set NHS_ENVIRONMENT"
     exit 1
   fi
 }
@@ -102,15 +145,15 @@ function generate_secret_ssm_param {
 command="$1"
 case "${command}" in
   _ssh_key)
-      check_env
+      check_gocd_env
       generate_ssh_key
       ;;
   ssh_key)
-      check_env
+      check_gocd_env
       dojo "./tasks _ssh_key"
       ;;
   tf)
-      check_env
+      check_gocd_env
       ./tasks ssh_key
       dojo "bash"
       ;;
@@ -118,15 +161,23 @@ case "${command}" in
       tf_plan "$2"
       ;;
   tf_plan)
-      check_env
+      check_gocd_env
       ./tasks ssh_key
       dojo "./tasks _tf_plan $2"
+      ;;
+  _tf_plan_cross_account)
+      tf_plan_cross_account "$2"
+      ;;
+  tf_plan_cross_account)
+      check_gocd_env
+      check_nhs_env
+      dojo "./tasks _tf_plan_cross_account $2"
       ;;
   _tf_plan_agents)
       tf_plan "$2" "-target module.local-agents.aws_instance.gocd_agent"
       ;;
   tf_plan_agents)
-      check_env
+      check_gocd_env
       ./tasks ssh_key
       dojo "./tasks _tf_plan_agents $2"
       ;;
@@ -134,7 +185,7 @@ case "${command}" in
       tf_plan "$2" "-target aws_instance.gocd_server"
       ;;
   tf_plan_server)
-      check_env
+      check_gocd_env
       ./tasks ssh_key
       dojo "./tasks _tf_plan_server $2"
       ;;
@@ -142,12 +193,20 @@ case "${command}" in
       tf_apply
       ;;
   tf_apply)
-      check_env
+      check_gocd_env
       ./tasks ssh_key
       dojo "./tasks _tf_apply"
       ;;
+  _tf_apply_cross_account)
+      tf_apply_cross_account
+      ;;
+  tf_apply_cross_account)
+      check_gocd_env
+      check_nhs_env
+      dojo "./tasks _tf_apply_cross_account"
+      ;;
   _provision)
-    check_env
+    check_gocd_env
     sudo pip install yasha #FIXME: add yasha in the dojo image
     yasha --variables terraform/tf-out-${GOCD_ENVIRONMENT}.json -o ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars
@@ -158,7 +217,7 @@ EOF
     sudo ansible-playbook -i ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/site.yml
     ;;
   provision)
-    check_env
+    check_gocd_env
     dojo -c Dojofile-ansible "./tasks _provision"
     ;;
   _create_secrets)
@@ -166,11 +225,11 @@ EOF
       generate_secret_ssm_param "/repo/${GOCD_ENVIRONMENT}/user-input/gocd-db-username"
       ;;
   create_secrets)
-      check_env
+      check_gocd_env
       dojo "./tasks _create_secrets"
       ;;
   generate_ssl_certs)
-    check_env
+    check_gocd_env
     docker run -ti --rm -v $PWD/letsencrypt:/etc/letsencrypt \
      -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
      -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
@@ -181,7 +240,7 @@ EOF
      -d ${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk
     ;;
   sync_certs)
-    check_env
+    check_gocd_env
     scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -r letsencrypt "ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~/letsencrypt"
     ssh -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk "sudo cp -r ~/letsencrypt /etc"
     ;;
