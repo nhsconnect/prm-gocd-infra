@@ -7,10 +7,20 @@ AWS_REGION=eu-west-2
 AWS_DEFAULT_REGION=$AWS_REGION
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+function create_build_trace_id {
+  if [ -z $GO_PIPELINE_NAME ]; then
+    export BUILD_TRACE_ID=local
+  else
+    git_hash=$(echo $GO_REVISION_GIT | cut -c 1-8)
+    export BUILD_TRACE_ID="gocd/$GO_PIPELINE_NAME/$GO_PIPELINE_COUNTER/$GO_STAGE_NAME/$GO_STAGE_COUNTER/$GO_JOB_NAME/$git_hash"
+  fi
+}
 
-function get_aws_ssm_secret {
+create_build_trace_id
+
+function _get_aws_ssm_secret {
   secret_id=$1
-  json=$(dojo "aws ssm get-parameter --with-decryption --region $AWS_REGION --name $secret_id")
+  json=$(aws ssm get-parameter --with-decryption --region $AWS_REGION --name $secret_id)
   if [ $? != 0 ]; then
     >&2 echo "Failed to obtain AWS secret from SSM: $secret_id"
     exit 5
@@ -243,6 +253,14 @@ EOF
     check_gocd_env
     scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -r letsencrypt "ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~/letsencrypt"
     ssh -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk "sudo cp -r ~/letsencrypt /etc"
+    ;;
+  _test_assume_role)
+    check_nhs_env
+    AWS_ACCOUNT_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/aws-account-id")
+    aws sts assume-role --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/repository-ci-agent --role-session-name "$BUILD_TRACE_ID" > /dev/null
+    ;;
+  test_assume_role)
+    dojo "./tasks _test_assume_role"
     ;;
   *)
       echo "Invalid command: '${command}'"
