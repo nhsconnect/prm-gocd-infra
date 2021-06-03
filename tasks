@@ -47,40 +47,6 @@ function tf_plan {
   fi
 }
 
-function tf_init_cross_account {
-  check_nhs_env
-  cd ${SCRIPT_DIR}/terraform-cross-account/
-  terraform init -reconfigure \
-      -backend-config key=${NHS_SERVICE}/nhs-${NHS_ENVIRONMENT}/gocd-${GOCD_ENVIRONMENT}/terraform.tfstate \
-      -backend-config bucket="prm-deductions-${NHS_ENVIRONMENT}-terraform-state" \
-      -backend-config dynamodb_table="prm-deductions-${NHS_ENVIRONMENT}-terraform-table" \
-      -backend-config region=${AWS_REGION}
-}
-
-function tf_plan_cross_account {
-  operation=$1
-  check_nhs_env
-
-  tf_init_cross_account
-  terraform get # modules
-  if [[ "${operation}" == "create" ]]; then
-    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="cross-account-${NHS_ENVIRONMENT}.tfplan" $2
-  elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var-file=${NHS_ENVIRONMENT}.tfvars -out="cross-account-${NHS_ENVIRONMENT}.tfplan" $2 -destroy
-  else
-    echo "Unknown operation (should be create or destroy), got: ${operation}"
-    exit 1
-  fi
-}
-
-function tf_apply_cross_account {
-  check_nhs_env
-  tf_init_cross_account
-  terraform get # modules
-  terraform apply "cross-account-${NHS_ENVIRONMENT}.tfplan"
-  terraform output -json > tf-out-cross-account-${NHS_ENVIRONMENT}.json
-}
-
 function tf_apply {
   cd terraform/
   terraform init -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
@@ -175,14 +141,6 @@ case "${command}" in
       ./tasks ssh_key
       dojo "./tasks _tf_plan $2"
       ;;
-  _tf_plan_cross_account)
-      tf_plan_cross_account "$2"
-      ;;
-  tf_plan_cross_account)
-      check_gocd_env
-      check_nhs_env
-      dojo "./tasks _tf_plan_cross_account $2"
-      ;;
   _tf_plan_agents)
       tf_plan "$2" "-target module.local-agents.aws_instance.gocd_agent"
       ;;
@@ -206,14 +164,6 @@ case "${command}" in
       check_gocd_env
       ./tasks ssh_key
       dojo "./tasks _tf_apply"
-      ;;
-  _tf_apply_cross_account)
-      tf_apply_cross_account
-      ;;
-  tf_apply_cross_account)
-      check_gocd_env
-      check_nhs_env
-      dojo "./tasks _tf_apply_cross_account"
       ;;
   _provision)
     check_gocd_env
