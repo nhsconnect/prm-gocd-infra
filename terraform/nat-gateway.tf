@@ -1,5 +1,5 @@
 resource "aws_nat_gateway" "gocd_agent" {
-  allocation_id = "eipalloc-03985bd9f7bc03f34"
+  allocation_id = aws_eip.gocd_agent_nat.id
   subnet_id = aws_subnet.public-subnet.id
 }
 
