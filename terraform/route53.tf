@@ -1,12 +1,3 @@
-
-resource "aws_route53_record" "gocd_public" {
-  zone_id = data.aws_ssm_parameter.public_zone_id.value
-  name    = "${var.environment}.gocd.${var.root_domain}"
-  type    = "A"
-  ttl     = "3600"
-  records = [aws_instance.gocd_server.public_ip]
-}
-
 # resource "aws_route53_record" "gocd_public_prod" {
 #   zone_id = data.aws_ssm_parameter.public_com_zone_id.value
 #   name    = "gocd.${var.root_domain}"

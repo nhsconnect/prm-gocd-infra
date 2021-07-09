@@ -49,6 +49,9 @@ variable "db_subnet_a" {
 variable "db_subnet_b" {
   default = "10.1.2.0/24"
 }
+variable "private_subnet" {
+  default = "10.1.3.0/24"
+}
 
 variable "az" {
   default = "eu-west-2a"

@@ -1,7 +1,6 @@
-
 # Setup AWS provider
 provider "aws" {
   profile = "default"
-  version = "~> 2.27"
+  version = "3.44.0"
   region = var.region
 }

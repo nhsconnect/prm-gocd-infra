@@ -168,6 +168,8 @@ case "${command}" in
   _provision)
     check_gocd_env
     sudo pip install yasha #FIXME: add yasha in the dojo image
+    scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} terraform/bootstrap.sh ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~
+    ssh -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk 'sudo ~/bootstrap.sh'
     yasha --variables terraform/tf-out-${GOCD_ENVIRONMENT}.json -o ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars
     cat << EOF > ansible/group_vars/${GOCD_ENVIRONMENT}.yml

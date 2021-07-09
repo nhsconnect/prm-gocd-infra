@@ -2,12 +2,12 @@ resource "aws_instance" "gocd_server" {
   ami                   = data.aws_ami.amazon-linux-2.id
   instance_type         = var.server_flavor
   availability_zone     = var.az
-  subnet_id             = local.subnet_id
+  subnet_id             = local.private_subnet_id
   ebs_optimized         = true
   vpc_security_group_ids = [
     aws_security_group.gocd_server.id
   ]
-  associate_public_ip_address = true
+  associate_public_ip_address = false
 
   key_name = aws_key_pair.gocd.key_name
 
@@ -15,17 +15,6 @@ resource "aws_instance" "gocd_server" {
     Name        = "GoCD server VM ${var.environment}"
     CreatedBy   = var.repo_name
     Environment = var.environment
-  }
-
-  connection {
-    host        = self.public_ip
-    type        = "ssh"
-    user        = local.remote_user
-    private_key = local.private_key
-  }
-
-  provisioner "remote-exec" {
-    script = "./bootstrap.sh"
   }
 }
 

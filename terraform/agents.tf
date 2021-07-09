@@ -3,11 +3,11 @@ module "local-agents" {
     source = "./agent-module"
     root_domain = var.root_domain
     agent_count = 6
-    subnet_id = local.subnet_id
+    subnet_id = local.private_subnet_id
     region = var.region
     agent_image_tag = var.agent_image_tag
     environment = var.environment
-    allocate_public_ip = true #TODO: use NAT for agents
+    allocate_public_ip = false
     gocd_agent_volume_size = var.gocd_agent_volume_size
     agent_flavor = var.agent_flavor
     az = var.az

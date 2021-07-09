@@ -34,3 +34,16 @@ resource "aws_subnet" "db_subnet_b" {
     Environment = var.environment
   }
 }
+
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.private_subnet
+  availability_zone       = var.az
+
+  tags = {
+    Name = "GoCD private subnet"
+    CreatedBy   = var.repo_name
+    Environment = var.environment
+  }
+}
+

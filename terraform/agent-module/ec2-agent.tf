@@ -22,8 +22,7 @@ resource "aws_instance" "gocd_agent" {
   availability_zone = var.az
 
   subnet_id                   = var.subnet_id
-  associate_public_ip_address = var.allocate_public_ip # required for internet access until we have nat
-  #TODO use NAT for agents
+  associate_public_ip_address = var.allocate_public_ip
 
   vpc_security_group_ids = [
     var.agent_sg_id,
