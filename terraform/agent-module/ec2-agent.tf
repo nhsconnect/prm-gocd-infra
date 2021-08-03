@@ -46,5 +46,18 @@ data "template_file" "agent_userdata" {
     AWS_REGION = var.region
     GOCD_AGENT_IMAGE_TAG = var.agent_image_tag
     AGENT_RESOURCES = var.agent_resources
+    SSM_CLOUDWATCH_CONFIG = aws_ssm_parameter.cw_agent.name
   }
+}
+
+resource "aws_ssm_parameter" "cw_agent" {
+  description = "Cloudwatch agent config to publish gocd-agents log"
+  name        = "/cloudwatch-agent/config"
+  type        = "String"
+  value       = "${file("${path.module}/cw_agent_config.json")}"
+
+}
+
+resource "aws_cloudwatch_log_group" "gocd" {
+  name = "gocd-instances"
 }

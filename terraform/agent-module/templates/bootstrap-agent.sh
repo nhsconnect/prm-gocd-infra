@@ -5,14 +5,31 @@ GOCD_ENVIRONMENT=${GOCD_ENVIRONMENT}
 AWS_REGION=${AWS_REGION}
 AGENT_RESOURCES=${AGENT_RESOURCES}
 
+sudo yum update -y
+
+#Removing ssh service
+sudo yum erase amazon-ssm-agent --assumeyes
+sudo systemctl stop sshd
+sudo systemctl disable sshd
+yes | sudo yum erase openssh-server
+
 if hash docker 2>/dev/null; then
   echo "Docker already installed"
 else
-  sudo yum update -y
   sudo amazon-linux-extras install -y docker
   sudo service docker start
   sudo usermod -a -G docker ec2-user
 fi
+
+# Configure Cloudwatch agent
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+rpm -U ./amazon-cloudwatch-agent.rpm
+
+# Use cloudwatch config from SSM
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+-a fetch-config \
+-m ec2 \
+-c ssm:${SSM_CLOUDWATCH_CONFIG} -s
 
 sudo yum install -y python python-pip
 

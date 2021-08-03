@@ -68,14 +68,6 @@ resource "aws_security_group" "go_agent_sg" {
   description = "Security group for GoCD agent VM in ${var.environment} environment"
   vpc_id      = aws_vpc.main.id
 
-  # ssh traffic from whitelisted IPs and local subnets
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/8", "${var.my_ip}/32"]
-  }
-
   egress {
     # allow all outgoing traffic
     from_port   = "0"
