@@ -117,10 +117,23 @@
           },
           {
             "file_path": "/var/log/secure",
-            "log_group_name": "gocd-instances",
-            "log_stream_name": "gocd-instances",
+            "log_group_name": "gocd-instances-user-data-logs",
+            "log_stream_name": "gocd-instances-user-data-logs",
+            "timezone": "Local"
+          },
+          {
+            "file_path": "/var/go-agent/godata/logs/go-agent-stderr.log",
+            "log_group_name": "gocd-instances-agent-error-logs",
+            "log_stream_name": "gocd-instances-agent-error-logs",
+            "timezone": "Local"
+          },
+          {
+            "file_path": "/var/go-agent/godata/logs/go-agent-stdout.log",
+            "log_group_name": "gocd-instances-agent-logs",
+            "log_stream_name": "gocd-instances-agent-logs",
             "timezone": "Local"
           }
+
         ]
       }
     },

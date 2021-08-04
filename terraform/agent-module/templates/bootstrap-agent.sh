@@ -21,16 +21,6 @@ else
   sudo usermod -a -G docker ec2-user
 fi
 
-# Configure Cloudwatch agent
-wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
-rpm -U ./amazon-cloudwatch-agent.rpm
-
-# Use cloudwatch config from SSM
-/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
--a fetch-config \
--m ec2 \
--c ssm:${SSM_CLOUDWATCH_CONFIG} -s
-
 sudo yum install -y python python-pip
 
 mkdir -p /var/go-agent/docker /var/go-agent/workspace /var/go-agent/godata
@@ -57,3 +47,15 @@ docker run -d \
   -v "/lib/modules:/lib/modules:ro" \
   -v "/sys/fs/cgroup:/sys/fs/cgroup" \
   327778747031.dkr.ecr.eu-west-2.amazonaws.com/gocd-agent:$AGENT_IMAGE_VERSION
+
+  # Configure Cloudwatch agent
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm
+rpm -U ./amazon-cloudwatch-agent.rpm
+
+sleep 10
+
+# Use cloudwatch config from SSM
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+-a fetch-config \
+-m ec2 \
+-c ssm:${SSM_CLOUDWATCH_CONFIG} -s

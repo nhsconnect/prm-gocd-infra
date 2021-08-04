@@ -59,5 +59,13 @@ resource "aws_ssm_parameter" "cw_agent" {
 }
 
 resource "aws_cloudwatch_log_group" "gocd" {
-  name = "gocd-instances"
+  name = "gocd-instances-user-data-logs"
+}
+
+resource "aws_cloudwatch_log_group" "gocd-agent" {
+  name = "gocd-instances-agent-logs"
+}
+
+resource "aws_cloudwatch_log_group" "gocd-agent-error" {
+  name = "gocd-instances-agent-error-logs"
 }
