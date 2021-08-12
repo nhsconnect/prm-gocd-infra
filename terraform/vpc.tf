@@ -30,3 +30,14 @@ resource "aws_ssm_parameter" "cidr_block" {
     Environment = var.environment
   }
 }
+
+resource "aws_flow_log" "nhs_audit" {
+  log_destination      = data.aws_ssm_parameter.nhs_audit_flow_s3_bucket_arn.value
+  log_destination_type = "s3"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.main.id
+}
+
+data "aws_ssm_parameter" "nhs_audit_flow_s3_bucket_arn" {
+  name = "/repo/user-input/external/nhs-audit-vpc-flow-log-s3-bucket-arn"
+}
