@@ -11,6 +11,7 @@ resource "aws_instance" "gocd_agent" {
     volume_type           = "gp2"
     volume_size           = var.gocd_agent_volume_size
     delete_on_termination = true
+    encrypted = true
   }
 
   volume_tags = {
