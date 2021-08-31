@@ -8,6 +8,9 @@ resource "aws_instance" "gocd_server" {
     aws_security_group.gocd_server.id
   ]
   associate_public_ip_address = false
+  root_block_device {
+    encrypted = true
+  }
 
   key_name = aws_key_pair.gocd.key_name
 
@@ -26,6 +29,7 @@ resource "aws_ebs_volume" "gocd_db" {
   }
   availability_zone = var.az
   size              = var.gocd_db_volume_size
+  encrypted = true
 }
 
 resource "aws_volume_attachment" "db_att" {
