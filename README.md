@@ -77,6 +77,12 @@ Run the following command to confirm the role was assumed correctly:
 
 `aws sts get-caller-identity`
 
+## Environments
+
+* `NHS_ENVIRONMENT` refers to the aws environment - `dev`, `test`, `pre-prod` etc.
+* `GOCD_ENVIRONMENT` refers to GoCD environment specifically - 
+GoCD is always in `prod`, however it is within the `ci` AWS account.
+
 # VPN
 
 ## Generating VPN client keys
