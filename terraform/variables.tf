@@ -56,3 +56,7 @@ variable "private_subnet" {
 variable "az" {
   default = "eu-west-2a"
 }
+
+variable "vpn_client_subnet" {
+  default = "10.233.216.0/22"
+}

@@ -7,6 +7,19 @@ AWS_REGION=eu-west-2
 AWS_DEFAULT_REGION=$AWS_REGION
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+AWS_HELPERS_VERSION="0.2.9"
+echo "AWS helper scripts version: $AWS_HELPERS_VERSION"
+
+# Do not change the file name as the aws helper scripts depend on it
+AWS_HELPERS_FILE="utils/$AWS_HELPERS_VERSION/aws-helpers"
+
+mkdir -p "utils/$AWS_HELPERS_VERSION"
+if [[ ! -f $AWS_HELPERS_FILE ]];then
+  wget --quiet -O $AWS_HELPERS_FILE https://github.com/nhsconnect/prm-deductions-support-infra/releases/download/${AWS_HELPERS_VERSION}/aws-helpers
+fi
+chmod +x $AWS_HELPERS_FILE
+source $AWS_HELPERS_FILE
+
 function create_build_trace_id {
   if [ -z $GO_PIPELINE_NAME ]; then
     export BUILD_TRACE_ID=local
@@ -118,6 +131,36 @@ function generate_secret_ssm_param {
   create_secret_ssm_param "$1" "$value"
 }
 
+function setup_vpn_ca {
+  if [[ ! -d "easy-rsa" ]]; then
+    git clone https://github.com/OpenVPN/easy-rsa.git
+  fi
+  cd easy-rsa/easyrsa3
+  echo yes | ./easyrsa init-pki
+  cd pki
+  echo "$(_get_aws_ssm_secret "/repo/user-input/vpn-ca-crt")" > ca.crt
+  echo "$(_get_aws_ssm_secret "/repo/user-input/vpn-ca-key")" > private/ca.key
+  echo "$(_get_aws_ssm_secret "/repo/user-input/vpn-ca-serial")" > serial
+  touch index.txt
+  touch index.txt.attr
+  mkdir -p certs_by_serial
+  mkdir -p issued
+  cd ..
+}
+
+function generate_vpn_server_crt {
+  crt_id="${GOCD_ENVIRONMENT}.gocd.vpn.patient-deductions.nhs.uk"
+  existing_crt="$(aws acm list-certificates | jq -r --arg crt_id "$crt_id" '.CertificateSummaryList[] | select(.DomainName==$crt_id)')"
+  if [[ -z $existing_crt ]]; then
+    setup_vpn_ca
+    ./easyrsa build-server-full $crt_id nopass
+
+    aws acm import-certificate --certificate fileb://pki/issued/$crt_id.crt --private-key fileb://pki/private/$crt_id.key --certificate-chain fileb://pki/ca.crt
+  else
+    echo "Server certificate $crt_id already exists"
+  fi
+}
+
 command="$1"
 case "${command}" in
   _ssh_key)
@@ -201,6 +244,14 @@ EOF
      --dns-route53 --agree-tos  \
      -d ${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk
     ;;
+  _generate_vpn_server_crt)
+      generate_vpn_server_crt
+      ;;
+  generate_vpn_server_crt)
+      check_gocd_env
+      _assume_environment_role ci
+      dojo "./tasks _generate_vpn_server_crt"
+      ;;
   sync_certs)
     check_gocd_env
     scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -r letsencrypt "ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~/letsencrypt"
