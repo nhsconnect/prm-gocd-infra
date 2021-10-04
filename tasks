@@ -161,6 +161,40 @@ function generate_vpn_server_crt {
   fi
 }
 
+function generate_vpn_client_crt {
+  check_gocd_env
+  if [[ -z $1 ]]; then
+    echo "Username required"
+    exit 1
+  fi
+  username="$1"
+  crt_id="$username.gocd.vpn.patient-deductions.nhs.uk"
+
+  setup_vpn_ca
+  if [[ ! -f pki/private/$crt_id.key ]]; then
+    echo "Client key file not present. Generating now."
+    ./easyrsa build-client-full $crt_id nopass
+  fi
+
+  client_crt="$(cat pki/issued/$crt_id.crt)"
+  client_key="$(cat pki/private/$crt_id.key)"
+
+  client_vpn_endpoint_id=$(_get_aws_ssm_secret "/repo/${GOCD_ENVIRONMENT}/output/prm-gocd-infra/client-vpn-endpoint-id")
+  config="$(aws ec2 export-client-vpn-client-configuration --client-vpn-endpoint-id $client_vpn_endpoint_id | jq -r ".ClientConfiguration")"
+
+  cd ../..
+  dirname="client-config"
+  mkdir -p $dirname
+  cd $dirname
+  filename="gocd.$username.ovpn"
+
+  echo "$config" > $filename
+  echo -e "<cert>\n$client_crt\n</cert>\n" >> $filename
+  echo -e "<key>\n$client_key\n</key>\n" >> $filename
+
+  echo "$username GOCD VPN client configuration file created in $dirname directory"
+}
+
 command="$1"
 case "${command}" in
   _ssh_key)
@@ -249,8 +283,14 @@ EOF
       ;;
   generate_vpn_server_crt)
       check_gocd_env
-      _assume_environment_role ci
       dojo "./tasks _generate_vpn_server_crt"
+      ;;
+  _generate_vpn_client_crt)
+      generate_vpn_client_crt "$2"
+      ;;
+  generate_vpn_client_crt)
+      check_gocd_env
+      dojo "./tasks _generate_vpn_client_crt $2"
       ;;
   sync_certs)
     check_gocd_env

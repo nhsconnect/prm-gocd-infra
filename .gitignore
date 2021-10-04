@@ -14,3 +14,5 @@
 .idea/
 utils
 /easy-rsa/
+/client-config/
+ssh/

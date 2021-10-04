@@ -77,6 +77,15 @@ Run the following command to confirm the role was assumed correctly:
 
 `aws sts get-caller-identity`
 
+# VPN
+
+## Generating VPN client keys
+
+1. [Gain access to AWS as described above](#Access-to-AWS)
+2. Generate GoCD VPN client configuration:
+```
+GOCD_ENVIRONMENT=prod ./tasks generate_vpn_client_crt <your-first-name.your-last-name>
+```
 
 ## AWS SSM Parameters Design Principles
 
