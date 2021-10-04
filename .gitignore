@@ -13,3 +13,4 @@
 /terraform-cross-account/tf-out-*.json
 .idea/
 utils
+/easy-rsa/
