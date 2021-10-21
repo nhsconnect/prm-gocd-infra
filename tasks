@@ -7,7 +7,7 @@ AWS_REGION=eu-west-2
 AWS_DEFAULT_REGION=$AWS_REGION
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-AWS_HELPERS_VERSION="0.2.9"
+AWS_HELPERS_VERSION="0.2.15"
 echo "AWS helper scripts version: $AWS_HELPERS_VERSION"
 
 # Do not change the file name as the aws helper scripts depend on it
@@ -300,7 +300,7 @@ EOF
   _test_assume_role)
     check_nhs_env
     AWS_ACCOUNT_ID=$(_get_aws_ssm_secret "/repo/${NHS_ENVIRONMENT}/user-input/external/aws-account-id")
-    aws sts assume-role --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/repository-ci-agent --role-session-name "$BUILD_TRACE_ID" > /dev/null
+    aws sts assume-role --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/Deployer --role-session-name "$BUILD_TRACE_ID" > /dev/null
     ;;
   test_assume_role)
     dojo "./tasks _test_assume_role"

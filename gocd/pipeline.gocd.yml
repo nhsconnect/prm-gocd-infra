@@ -31,3 +31,15 @@ pipelines:
                 arguments:
                     - -c
                     - ./tasks test_assume_role
+      - test:
+          clean_workspace: true
+          resources:
+            - docker
+          environment_variables:
+            NHS_ENVIRONMENT: pre-prod
+          tasks:
+            - exec:
+                command: /bin/bash
+                arguments:
+                    - -c
+                    - ./tasks test_assume_role
