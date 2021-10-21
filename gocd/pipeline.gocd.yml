@@ -31,7 +31,7 @@ pipelines:
                 arguments:
                     - -c
                     - ./tasks test_assume_role
-      - test:
+      - pre-prod:
           clean_workspace: true
           resources:
             - docker
