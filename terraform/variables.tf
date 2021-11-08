@@ -2,6 +2,9 @@ variable "root_domain" {
   default = "patient-deductions.nhs.uk"
 }
 
+variable "agent_count" {
+}
+
 variable "agent_image_tag" {}
 
 variable "environment" {}

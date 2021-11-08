@@ -2,7 +2,7 @@
 module "local-agents" {
     source = "./agent-module"
     root_domain = var.root_domain
-    agent_count = 5
+    agent_count = var.agent_count
     subnet_id = local.private_subnet_id
     region = var.region
     agent_image_tag = var.agent_image_tag
