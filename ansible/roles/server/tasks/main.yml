@@ -120,6 +120,7 @@
      - "8154:8154"
     env:
       GCHAT_NOTIFIER_CONF_PATH: /home/go/gchat_notif.conf
+      GOCD_SERVER_JVM_OPTS: "-Dlog4j2.formatMsgNoLookups=true"
     volumes:
       - /var/gocd-data/data:/godata
       - /var/gocd-data/home:/home/go
