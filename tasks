@@ -205,9 +205,10 @@ case "${command}" in
       check_gocd_env
       dojo "./tasks _ssh_key"
       ;;
-  ssh_create_tunnel)
+  create_ssh_tunnel)
       check_gocd_env
-      ssh -L 2222:localhost:22 -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk
+      echo "Creating tunnel to GoCD EC2 instance. Press Ctrl-C to exit."
+      ssh -N -L 2222:localhost:22 -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk
       ;;
   tf)
       check_gocd_env
@@ -249,7 +250,14 @@ case "${command}" in
   _provision)
     check_gocd_env
     sudo pip install yasha #FIXME: add yasha in the dojo image
+    set +e
     scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -P 2222 terraform/bootstrap.sh ec2-user@host.docker.internal:~
+    SCP_EXIT_CODE=$?
+    set -e
+    if [ $SCP_EXIT_CODE -ne 0 ]; then
+      echo "Could not communicate to server via scp. Did you run './tasks create_ssh_tunnel'?"
+      exit $SCP_EXIT_CODE
+    fi
     ssh -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -p 2222 ec2-user@host.docker.internal 'sudo ~/bootstrap.sh'
     yasha --variables terraform/tf-out-${GOCD_ENVIRONMENT}.json -o ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars

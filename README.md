@@ -136,9 +136,9 @@ At this point EC2 instance should exist.
 
 Next step is to install GoCD software on it. To achieve this, you need to use _ssh port forwarding_ - known also as _ssh tunneling_ - to be able to connect your local machine to the remote server/EC2 via VPN.
 
-To achieve this, you have to execute `./tasks ssh_create_tunnel`, that will create the tunnel and connect your terminal session to the remote EC2 instance.
+To achieve this, you have to execute `./tasks create_ssh_tunnel`, that start a tunnel to the GoCD EC2 instance.
 
-Now you should be able to provision GoCD server using `./tasks provision` opening another console/terminal session. Once this is completed, you can close the tunnel session in the original terminal window.
+Now you should be able to provision GoCD server using `./tasks provision` opening another console/terminal session.
 
 Updating only the agents can be done with:
 ```
