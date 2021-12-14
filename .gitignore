@@ -5,7 +5,7 @@
 /secrets.yml
 /terraform/*_ip.txt
 /terraform/ssh-old/
-/terraform/tf-out.json
+/terraform/tf-out-*.json
 /ansible/group_vars/test.yml
 /ansible/inventory/*.ini
 /letsencrypt/
