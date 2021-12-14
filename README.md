@@ -132,8 +132,13 @@ Review the terraform plan and apply with:
 ./tasks tf_apply
 ```
 
-At this point EC2 instance should exist. Next step is to install GoCD software on it.
-To provision GoCD server use `./tasks provision`.
+At this point EC2 instance should exist.
+
+Next step is to install GoCD software on it. To achieve this, you need to use _ssh port forwarding_ - known also as _ssh tunneling_ - to be able to connect your local machine to the remote server/EC2 via VPN.
+
+To achieve this, you have to execute `./tasks ssh_create_tunnel`, that will create the tunnel and connect your terminal session to the remote EC2 instance.
+
+Now you should be able to provision GoCD server using `./tasks provision` opening another console/terminal session. Once this is completed, you can close the tunnel session in the original terminal window.
 
 Updating only the agents can be done with:
 ```
