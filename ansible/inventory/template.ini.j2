@@ -1,4 +1,4 @@
-server_vm db_url={{ db_url.value }} db_user={{ db_user.value }} db_password={{ db_password.value }} ansible_host={{ server_private_ip.value }} ansible_user={{ remote_user.value }} ansible_ssh_private_key_file=terraform/ssh/gocd-{{ environment.value }} ansible_become=true
+server_vm db_url={{ db_url.value }} db_user={{ db_user.value }} db_password={{ db_password.value }} ansible_host=host.docker.internal ansible_port=2222 ansible_user={{ remote_user.value }} ansible_ssh_private_key_file=terraform/ssh/gocd-{{ environment.value }} ansible_become=true
 
 [server]
 server_vm gocd_device=/dev/nvme1n1
