@@ -1,0 +1,2 @@
+DOJO_DOCKER_IMAGE="kudulab/ansible-dojo:1.1.0"
+DOJO_DOCKER_OPTIONS="--add-host prod.gocd.patient-deductions.nhs.uk:xxx-insert-server-ip-here"

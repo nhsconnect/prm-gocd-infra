@@ -148,6 +148,14 @@ GOCD_ENVIRONMENT=prod ./tasks tf_apply
 
 Agent's images are built and pushed manually, dockerfiles are versioned at [nhsconnect/prm-docker-gocd-agent](https://github.com/nhsconnect/prm-docker-gocd-agent).
 
+## Deployment from linux
+
+From linux (Ubuntu 18.0.4 LTS tested) the network setup is slightly differnt and SSH forwarding does not work out of the box,
+neither does DNS resolution over VPN. Simplest setup is to use direct networking without the tunnel requiring these changes (currently requiring manual change, scripts automated for use on Macs):
+- use `Dojofile-ansible-linux` to fix the DNS
+- instead of `docker.host.internal` use `<gocd env>.gocd.patient-deductions.nhs.uk`
+- don't use the `-p / -P 2222` switches, go direct to SSH port 22
+
 ## Google Chat notification setup for GoCD
 - `git clone https://github.com/susmithasrimani/gocd-google-chat-build-notifier.git`
 - `cd gocd-google-chat-build-notifier`
@@ -169,3 +177,4 @@ Some more automation to do:
  - Connecting GoCD analytics to the RDS requires to put plugin settings via the UI
  - Agent's auto-registration key was placed in SSM store manually. This is a one-time operation.
  - Agents could be placed behind a NAT.
+
