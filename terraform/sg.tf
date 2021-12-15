@@ -30,14 +30,14 @@ resource "aws_security_group" "gocd_server" {
     from_port   = 8153
     to_port     = 8154
     protocol    = "tcp"
-    cidr_blocks = concat(["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = ["10.0.0.0/8"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = concat(["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = ["10.0.0.0/8"]
   }
 
   # SSH for provisioning from whitelisted IP
@@ -45,7 +45,7 @@ resource "aws_security_group" "gocd_server" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = concat(["10.0.0.0/8", "${var.my_ip}/32"])
+    cidr_blocks = ["10.0.0.0/8"]
   }
 
   egress {

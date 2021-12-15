@@ -44,16 +44,15 @@ function _get_aws_ssm_secret {
 function tf_plan {
   operation=$1
 
-  my_ip=$(curl icanhazip.com)
-  echo "Running terraform plan with added security group ingress from $my_ip"
+  echo "Running terraform plan"
 
   cd terraform/
   terraform init -reconfigure -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
   terraform get # modules
   if [[ "${operation}" == "create" ]]; then
-    terraform plan -var my_ip=$my_ip -var-file=${GOCD_ENVIRONMENT}.tfvars -out="${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan" $2
+    terraform plan -var-file=${GOCD_ENVIRONMENT}.tfvars -out="${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan" $2
   elif [[ "${operation}" == "destroy" ]]; then
-    terraform plan -var my_ip=$my_ip -var-file=${GOCD_ENVIRONMENT}.tfvars -out="${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan" $2 -destroy
+    terraform plan -var-file=${GOCD_ENVIRONMENT}.tfvars -out="${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan" $2 -destroy
   else
     echo "Unknown operation (should be create or destroy), got: ${operation}"
     exit 1

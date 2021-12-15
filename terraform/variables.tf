@@ -9,11 +9,6 @@ variable "agent_image_tag" {}
 
 variable "environment" {}
 
-variable "my_ip" {
-  default = "127.0.0.1"
-  description = "Optional, for working from home/dynamic IP"
-}
-
 variable "region" {
   default = "eu-west-2"
 }
