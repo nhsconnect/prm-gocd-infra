@@ -108,6 +108,7 @@
     name: gocd-server
     tag: latest
     source: build
+    force: yes
 
 - name: Setup GoCD server container
   docker_container:
