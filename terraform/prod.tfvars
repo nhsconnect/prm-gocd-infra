@@ -6,4 +6,4 @@ agent_image_tag = "v0.2.0"
 server_flavor = "t3a.medium"
 db_subnet_a = "10.1.1.0/24"
 db_subnet_b ="10.1.2.0/24"
-agent_count = 10
+agent_count = 2
