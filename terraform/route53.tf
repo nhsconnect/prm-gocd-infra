@@ -1,12 +1,3 @@
-# resource "aws_route53_record" "gocd_public_prod" {
-#   zone_id = data.aws_ssm_parameter.public_com_zone_id.value
-#   name    = "gocd.${var.root_domain}"
-#   type    = "CNAME"
-#   ttl     = "3600"
-#   records = ["proxy.${var.root_domain}"]
-#   count   = "${var.environment == "production" ? 1 : 0}"
-# }
-
 # Private zone
 resource "aws_route53_zone" "private" {
   name = "${var.environment}.gocd.${var.root_domain}"
