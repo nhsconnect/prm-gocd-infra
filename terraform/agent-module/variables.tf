@@ -30,7 +30,7 @@ variable "region" {
 }
 
 variable "gocd_agent_volume_size" {
-  default = 40
+  default = 80
 }
 
 variable "agent_count" {

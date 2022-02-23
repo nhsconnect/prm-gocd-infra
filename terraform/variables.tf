@@ -27,7 +27,7 @@ variable "gocd_db_volume_size" {
 }
 
 variable "gocd_agent_volume_size" {
-  default = 40
+  default = 80
 }
 
 variable "agent_flavor" {
