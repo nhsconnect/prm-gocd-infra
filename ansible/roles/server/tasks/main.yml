@@ -30,6 +30,7 @@
   with_items:
     - /var/gocd-data/data
     - /var/gocd-data/home
+    - /var/gocd-data/go-working-dir
     - /var/gocd-data/data/config
     - /var/gocd-data/data/plugins/external
 
@@ -124,4 +125,5 @@
       GOCD_SERVER_JVM_OPTS: "-Dlog4j2.formatMsgNoLookups=true"
     volumes:
       - /var/gocd-data/data:/godata
+      - /var/gocd-data/go-working-dir:/go-working-dir
       - /var/gocd-data/home:/home/go
