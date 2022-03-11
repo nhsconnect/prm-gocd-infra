@@ -41,14 +41,17 @@ function _get_aws_ssm_secret {
   echo $json | jq -r ".Parameter.Value"
 }
 
+function tf_init {
+  cd terraform/
+  terraform init -reconfigure -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
+  terraform get # modules
+}
+
 function tf_plan {
   operation=$1
 
   echo "Running terraform plan"
-
-  cd terraform/
-  terraform init -reconfigure -backend-config key=nhs-${NHS_SERVICE}-${GOCD_ENVIRONMENT}/terraform.tfstate
-  terraform get # modules
+  tf_init
   if [[ "${operation}" == "create" ]]; then
     terraform plan -var-file=${GOCD_ENVIRONMENT}.tfvars -out="${NHS_SERVICE}-${GOCD_ENVIRONMENT}.tfplan" $2
   elif [[ "${operation}" == "destroy" ]]; then
@@ -209,10 +212,14 @@ case "${command}" in
       echo "Creating tunnel to GoCD EC2 instance. Press Ctrl-C to exit."
       ssh -N -L 2222:localhost:22 -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk
       ;;
+  _tf)
+      tf_init
+      bash
+      ;;
   tf)
       check_gocd_env
       ./tasks ssh_key
-      dojo "bash"
+      dojo "./tasks _tf"
       ;;
   _tf_plan)
       tf_plan "$2"
@@ -250,14 +257,14 @@ case "${command}" in
     check_gocd_env
     sudo pip install yasha #FIXME: add yasha in the dojo image
     set +e
-    scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -P 2222 terraform/bootstrap.sh ec2-user@host.docker.internal:~
+    scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -P 22 terraform/bootstrap.sh ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~
     SCP_EXIT_CODE=$?
     set -e
     if [ $SCP_EXIT_CODE -ne 0 ]; then
       echo "Could not communicate to server via scp. Did you run './tasks create_ssh_tunnel'?"
       exit $SCP_EXIT_CODE
     fi
-    ssh -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -p 2222 ec2-user@host.docker.internal 'sudo ~/bootstrap.sh'
+    ssh -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -p 22 ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk 'sudo ~/bootstrap.sh'
     yasha --variables terraform/tf-out-${GOCD_ENVIRONMENT}.json -o ansible/inventory/${GOCD_ENVIRONMENT}.ini ansible/inventory/template.ini.j2
     mkdir -p ansible/group_vars
     cat << EOF > ansible/group_vars/${GOCD_ENVIRONMENT}.yml
