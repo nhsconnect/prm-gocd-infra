@@ -44,3 +44,7 @@ variable "agent_flavor" {
 variable "az" {
   default = "eu-west-2a"
 }
+
+variable "agent_name" {
+  default = "gocd"
+}

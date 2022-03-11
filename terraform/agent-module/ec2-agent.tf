@@ -36,10 +36,11 @@ resource "aws_instance" "gocd_agent" {
     Environment = var.environment
   }
 
-  user_data            = data.template_file.agent_userdata.rendered
+  user_data            = data.template_file.agent_userdata[count.index].rendered
 }
 
 data "template_file" "agent_userdata" {
+  count         = var.agent_count
   template = "${file("${path.module}/templates/bootstrap-agent.sh")}"
 
   vars = {
@@ -47,25 +48,36 @@ data "template_file" "agent_userdata" {
     AWS_REGION = var.region
     GOCD_AGENT_IMAGE_TAG = var.agent_image_tag
     AGENT_RESOURCES = var.agent_resources
-    SSM_CLOUDWATCH_CONFIG = aws_ssm_parameter.cw_agent.name
+    SSM_CLOUDWATCH_CONFIG = aws_ssm_parameter.cw_agent[count.index].name
   }
 }
 
 resource "aws_ssm_parameter" "cw_agent" {
-  description = "Cloudwatch agent config to publish gocd-agents log"
-  name        = "/cloudwatch-agent/config"
+  count         = var.agent_count
+  description = "Cloudwatch agent ${count.index} config to publish gocd-agents log"
+  name        = "/cloudwatch-agent/${var.agent_name}-agent-${count.index}-config"
   type        = "String"
-  value       = file("${path.module}/cw_agent_config.json")
+  value       = data.template_file.cw_config[count.index].rendered
+}
+
+data "template_file" "cw_config" {
+  count         = var.agent_count
+  template = "${file("${path.module}/cw_agent_config.json")}"
+
+  vars = {
+    AGENT_INDEX = count.index
+    AGENT_INSTANCE_ID = "aws:InstanceId",
+  }
 }
 
 resource "aws_cloudwatch_log_group" "gocd" {
-  name = "gocd-instances-user-data-logs"
+  name = "${var.agent_name}-instances-user-data-logs"
 }
 
 resource "aws_cloudwatch_log_group" "gocd-agent" {
-  name = "gocd-instances-agent-logs"
+  name = "${var.agent_name}-instances-agent-logs"
 }
 
 resource "aws_cloudwatch_log_group" "gocd-agent-error" {
-  name = "gocd-instances-agent-error-logs"
+  name = "${var.agent_name}-instances-agent-error-logs"
 }

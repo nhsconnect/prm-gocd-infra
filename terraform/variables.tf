@@ -34,6 +34,10 @@ variable "agent_flavor" {
   default = "t3a.medium"
 }
 
+variable "big_agent_flavor" {
+  default = "t3a.large"
+}
+
 variable "vpc_cidr_block" {
   default = "10.1.0.0/16"
 }
