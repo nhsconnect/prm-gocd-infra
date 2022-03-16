@@ -86,6 +86,14 @@
     url: https://github.com/gocd/gocd-analytics-plugin/releases/download/v3.0.0-5/gocd-analytics-plugin-3.0.0-5.jar
     dest: /var/gocd-data/data/plugins/external/gocd-analytics-plugin-3.0.0-5.jar
 
+- name: Setup patch to cleanup GP2GP dashboard artifacts
+  template:
+    src: gocd-dashboard-cleanup.sh
+    dest: /etc/cron.hourly/gocd-dashboard-cleanup
+    owner: "{{ ansible_user }}"
+    group: root
+    mode: 0755
+
 - name: Create GoCD docker build working directory
   file:
     path: /var/gocd-data/docker-build
