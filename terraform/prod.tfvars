@@ -7,4 +7,3 @@ server_flavor = "t3a.medium"
 db_subnet_a = "10.1.1.0/24"
 db_subnet_b ="10.1.2.0/24"
 agent_count = 8
-gocd_agent_volume_size = 300
