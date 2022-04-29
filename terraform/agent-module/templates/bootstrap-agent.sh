@@ -41,6 +41,7 @@ docker run -d \
   -e GO_SERVER_URL="https://$GOCD_ENVIRONMENT.gocd.patient-deductions.nhs.uk/go" \
   -e SECRET_STORE=aws \
   -e AWS_SECRET_STORE_PATH=repo/$GOCD_ENVIRONMENT/user-input/external \
+  -e DELETE_IMAGES_OLDER_THAN_DAYS=30 \
   -v "/var/go-agent/godata:/godata" \
   -v "/var/go-agent/docker:/var/lib/docker" \
   -v "/etc/localtime:/etc/localtime:ro" \

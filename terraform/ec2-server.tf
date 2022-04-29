@@ -20,7 +20,7 @@ resource "aws_instance" "gocd_server" {
     Environment = var.environment
   }
 }
-
+//TODO Change the root disk size to 16 as it should be 8 now in terraform.
 resource "aws_ebs_volume" "gocd_db" {
   tags = {
     Name = "GoCD DB ${var.environment} data and artifacts"
