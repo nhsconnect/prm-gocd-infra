@@ -10,6 +10,7 @@ resource "aws_instance" "gocd_server" {
   associate_public_ip_address = false
   root_block_device {
     encrypted = true
+    volume_size = 16
   }
 
   key_name = aws_key_pair.gocd.key_name
@@ -20,7 +21,6 @@ resource "aws_instance" "gocd_server" {
     Environment = var.environment
   }
 }
-//TODO Change the root disk size to 16 as it should be 8 now in terraform.
 resource "aws_ebs_volume" "gocd_db" {
   tags = {
     Name = "GoCD DB ${var.environment} data and artifacts"
