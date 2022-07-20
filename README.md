@@ -20,7 +20,7 @@ Other agents can be deployed in specific networks. The `remote-agents-module` te
 
 Each agent has Docker and Dojo available, which makes it possible to build any project as long as you produce a docker image with required tools first. For more details see the [Dojo readme](https://github.com/kudulab/dojo).
 
-A complete spec of the agent tools is defined by [Kudulab's GoCD Agent Docker image](https://github.com/kudulab/docker-kudu-gocd-agent) which contains the actual docker file.
+A complete spec of the agent tools is defined by [Kudulab's GoCD Agent DockerDocker image](https://github.com/kudulab/docker-kudu-gocd-agent) which contains the actual docker file.
 
 
 # Deployment/Lifecycle
@@ -178,3 +178,6 @@ Some more automation to do:
  - Agent's auto-registration key was placed in SSM store manually. This is a one-time operation.
  - Agents could be placed behind a NAT.
 
+## Troubleshooting and Common Issues
+- When gocd server has disk/memory related issue to release some disk space `docker system prune`
+- To run the gocd server container manually `docker run --detach -p "8153:8153" -p "8154:8154" --env GCHAT_NOTIFIER_CONF_PATH=/home/go/gchat_notif.conf --env GOCD_SERVER_JVM_OPTS="-Dlog4j2.formatMsgNoLookups=true" --volume "/var/gocd-data/data:/godata" --volume "/var/gocd-data/go-working-dir:/go-working-dir" --volume "/var/gocd-data/home:/home/go" --name server gocd-server:latest`
