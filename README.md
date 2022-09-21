@@ -146,6 +146,13 @@ GOCD_ENVIRONMENT=prod ./tasks tf_plan_agents create
 GOCD_ENVIRONMENT=prod ./tasks tf_apply
 ```
 
+To [re-]deploy a specific agent, e.g. for agent 3:
+
+```
+GOCD_ENVIRONMENT=prod ./tasks tf_plan_agent 3 create
+GOCD_ENVIRONMENT=prod ./tasks tf_apply
+```
+
 Agent's images are built and pushed manually, dockerfiles are versioned at [nhsconnect/prm-docker-gocd-agent](https://github.com/nhsconnect/prm-docker-gocd-agent).
 
 ## Deployment from linux

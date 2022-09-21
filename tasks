@@ -230,6 +230,14 @@ case "${command}" in
       ./tasks ssh_key
       dojo "./tasks _tf_plan $2"
       ;;
+  _tf_plan_agent)
+      tf_plan "$3" "-target module.local-agents.aws_instance.gocd_agent[$2]"
+      ;;
+  tf_plan_agent)
+      check_gocd_env
+      ./tasks ssh_key
+      dojo "./tasks _tf_plan_agent $2 $3"
+      ;;
   _tf_plan_agents)
       tf_plan "$2" "-target module.local-agents.aws_instance.gocd_agent"
       ;;
