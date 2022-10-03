@@ -177,6 +177,25 @@ neither does DNS resolution over VPN. Simplest setup is to use direct networking
 - Click on the cogwheel next to the Google Chat Build Notifier plugin
 - Paste the Google Chat webhook token into `Webhook URL` field. You can find Google Chat webhook token in the `NHS - PRM Build Failures` room at `Manage webhooks` option.
 
+
+## SSL cert update
+
+This uses certbot and letsencrpt and appears to only generate on your local machine (using AWS DNS automatically to prove ownership of domain)
+and then upload to `/etc/letsencrypt` can occur.
+
+These steps were done on a machine that recently deployed GOCD agents, so it had `gocd-prod` and `gocd-prod.pub` keys in `terraform/ssh/`.
+
+```bash
+./tasks generate_ssl_certs
+sudo ./tasks sync_certs
+```
+
+Over ssh on the gocd server you can then issue:
+
+```bash
+docker restart nginx
+```
+
 ## TODO & Manual steps
 
 Some more automation to do:

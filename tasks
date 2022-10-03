@@ -321,7 +321,7 @@ EOF
       ;;
   sync_certs)
     check_gocd_env
-    scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -r letsencrypt "ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~/letsencrypt"
+    scp -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} -r letsencrypt "ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk:~"
     ssh -i terraform/ssh/gocd-${GOCD_ENVIRONMENT} ec2-user@${GOCD_ENVIRONMENT}.gocd.patient-deductions.nhs.uk "sudo cp -r ~/letsencrypt /etc"
     ;;
   _test_assume_role)
