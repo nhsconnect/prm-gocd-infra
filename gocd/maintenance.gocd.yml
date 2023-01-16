@@ -10,7 +10,8 @@ pipelines:
       - disk-checks:
           clean_workspace: true
           resources:
-            - docker
+            - maintenance
+          run_instances: all
           tasks:
             - exec:
                 command: /bin/bash
@@ -32,11 +33,13 @@ pipelines:
                 arguments:
                   - -c
                   - "du -h --max-depth 3 /godata  | sort -k1 -h"
-            - exec:
-                command: /bin/bash
-                arguments:
-                  - -c
-                  - "echo about to prune waiting 30 seconds && sleep 30"
+      - docker-cleanup:
+          approval: manual
+          clean_workspace: true
+          resources:
+            - maintenance
+          run_instances: all
+          tasks:
             - exec:
                 command: /bin/bash
                 arguments:
