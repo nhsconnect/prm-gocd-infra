@@ -31,4 +31,4 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
-                  - du --max-depth 3 /godata
+                  - "du -h --max-depth 3 /godata  | sort -k1 -h"
