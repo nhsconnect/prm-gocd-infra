@@ -41,7 +41,7 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
-                  - docker system prune
+                  - docker system prune --force
             - exec:
                 command: /bin/bash
                 arguments:
