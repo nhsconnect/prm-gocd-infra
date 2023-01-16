@@ -32,3 +32,18 @@ pipelines:
                 arguments:
                   - -c
                   - "du -h --max-depth 3 /godata  | sort -k1 -h"
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - "echo about to prune waiting 30 seconds && sleep 30"
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - docker system prune
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - df -h
