@@ -8,6 +8,7 @@ pipelines:
         type: configrepo
     stages:
       - disk-checks:
+          approval: manual
           clean_workspace: true
           resources:
             - maintenance
