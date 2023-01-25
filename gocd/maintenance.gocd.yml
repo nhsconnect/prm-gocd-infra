@@ -34,7 +34,7 @@ pipelines:
                 arguments:
                   - -c
                   - "du -h --max-depth 3 /godata  | sort -k1 -h"
-      - docker-cleanup:
+      - cleanup:
           approval: manual
           clean_workspace: true
           resources:
@@ -46,6 +46,16 @@ pipelines:
                 arguments:
                   - -c
                   - docker system prune --force
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - df -h
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
+                  - "rm -rf /godata/pipelines/prm-gp2gp-dashboard"
             - exec:
                 command: /bin/bash
                 arguments:
