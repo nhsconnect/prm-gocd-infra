@@ -8,6 +8,7 @@ module "local-agents" {
     agent_image_tag = var.agent_image_tag
     environment = var.environment
     allocate_public_ip = false
+    gocd_agent_volume_type = var.gocd_agent_volume_type
     gocd_agent_volume_size = var.gocd_agent_volume_size
     agent_flavor = var.agent_flavor
     az = var.az

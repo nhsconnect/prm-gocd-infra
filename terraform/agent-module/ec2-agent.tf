@@ -8,7 +8,7 @@ resource "aws_instance" "gocd_agent" {
   iam_instance_profile = var.agent_instance_profile
 
   root_block_device {
-    volume_type           = "gp2"
+    volume_type           = var.gocd_agent_volume_type
     volume_size           = var.gocd_agent_volume_size
     delete_on_termination = true
     encrypted = true

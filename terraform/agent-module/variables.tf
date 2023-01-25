@@ -29,6 +29,10 @@ variable "region" {
   default = "eu-west-2"
 }
 
+variable "gocd_agent_volume_type" {
+  default = "gp3"
+}
+
 variable "gocd_agent_volume_size" {
   default = 80
 }

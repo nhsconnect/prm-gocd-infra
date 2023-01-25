@@ -26,8 +26,12 @@ variable "gocd_db_volume_size" {
   default = 300
 }
 
+variable "gocd_agent_volume_type" {
+  default = "gp3"
+}
+
 variable "gocd_agent_volume_size" {
-  default = 80
+  default = 120
 }
 
 variable "agent_flavor" {
