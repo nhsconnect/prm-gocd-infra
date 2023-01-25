@@ -60,4 +60,9 @@ pipelines:
                 command: /bin/bash
                 arguments:
                   - -c
+                  - "rm -rf /godata/pipelines/ehr-out-service.audit"
+            - exec:
+                command: /bin/bash
+                arguments:
+                  - -c
                   - df -h
