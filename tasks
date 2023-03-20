@@ -86,27 +86,29 @@ function check_nhs_env {
 
 function generate_ssh_key {
   secret_id="/repo/${GOCD_ENVIRONMENT}/user-input/gocd-id-rsa"
+  set +e
   mkdir -p terraform/ssh/
-  if [[ ! -f "terraform/ssh/gocd-${GOCD_ENVIRONMENT}" ]]; then
-    #TODO check aws authentication
-    set +e
-    id_rsa=$(aws ssm get-parameter --with-decryption --region $AWS_REGION --name $secret_id | jq -r ".Parameter.Value")
-    if [[ $? == 0 ]]; then
-      echo "$id_rsa" > terraform/ssh/gocd-${GOCD_ENVIRONMENT}
-    else
+  id_rsa=$(aws ssm get-parameter --with-decryption --region $AWS_REGION --name $secret_id | jq -r ".Parameter.Value")
+  if [[ $? == 0 ]]; then
+    echo "$id_rsa" > terraform/ssh/gocd-${GOCD_ENVIRONMENT}
+  else
+    echo '\n'
+    read -p $'\e[31mDANGER: Are you sure you want to overwrite the ssh key? (Y/n)\e[0m:' -n 1 -r
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
       set -e
+      mkdir -p terraform/ssh/
       ssh-keygen -f "terraform/ssh/gocd-${GOCD_ENVIRONMENT}" -q -N ""
+      aws ssm put-parameter \
+        --region $AWS_REGION \
+        --name $secret_id \
+        --type SecureString \
+        --overwrite \
+        --value "`cat terraform/ssh/gocd-${GOCD_ENVIRONMENT}`"
     fi
-    set -e
   fi
+
   chmod 0600 terraform/ssh/gocd-${GOCD_ENVIRONMENT}
   ssh-keygen -y -f "terraform/ssh/gocd-${GOCD_ENVIRONMENT}" > "terraform/ssh/gocd-${GOCD_ENVIRONMENT}.pub"
-  aws ssm put-parameter \
-   --region $AWS_REGION \
-   --name $secret_id \
-   --type SecureString \
-   --overwrite \
-   --value "`cat terraform/ssh/gocd-${GOCD_ENVIRONMENT}`"
 }
 
 function create_secret_ssm_param {
