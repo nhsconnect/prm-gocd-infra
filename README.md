@@ -1,6 +1,6 @@
 # prm-gocd-infra
 
-Setup of [GoCD](https://www.gocd.org/) deployment for NHS Repo Team.
+Setup of [GoCD](https://www.gocd.org/) deployment for NHS Patient Record Management Team.
 
 The server is accessible at `https://prod.gocd.patient-deductions.nhs.uk` via VPN. You will need to authenticate
 using GitHub.
@@ -157,6 +157,8 @@ instance.
 
 Now you should be able to provision the GoCD server using: `./tasks provision`. This opens another console/terminal
 session.
+
+The GoCD server is provisioned using an Ansible playback which will setup a Docker container for both the GoCD Server, and an NGINX proxy. The NGINX proxy needs to have SSL certificates synced to it in order to launch correctly, that can be done byt firstly generating certs `./tasks generate_ssl_certs` followed by `./tasks sync_certs`.
 
 Updating only the agents can be done with:
 
