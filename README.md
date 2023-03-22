@@ -7,6 +7,8 @@ using GitHub.
 
 ## Architecture
 
+![gocd arch diagram](docs/gocd_infrastructure_diagram.png)
+
 GoCD consists of a server and agents. The server data is stored in an [RDS database](https://aws.amazon.com/rds/) and
 build artifacts are stored on an
 [EC2 volume](https://aws.amazon.com/ec2/).
@@ -238,3 +240,4 @@ You can release some disk space by doing the following whilst logged onto the se
 2. Remove the stopped `server` container to release some disk space: `docker system prune`
 3. Start a new `server`
    container: `docker run --detach -p "8153:8153" -p "8154:8154" --env GCHAT_NOTIFIER_CONF_PATH=/home/go/gchat_notif.conf --env GOCD_SERVER_JVM_OPTS="-Dlog4j2.formatMsgNoLookups=true" --volume "/var/gocd-data/data:/godata" --volume "/var/gocd-data/go-working-dir:/go-working-dir" --volume "/var/gocd-data/home:/home/go" --name server gocd-server:latest`
+
