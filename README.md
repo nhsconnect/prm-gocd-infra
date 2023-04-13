@@ -234,6 +234,57 @@ docker restart nginx
 
 ## Troubleshooting & Common Issues
 
+### Expired Github Personal Access Tokens/ OAuth Client Secrets
+When personal access token are due to expire:
+1. Login to GoCD first. 
+2. Renew/Create your PAT in GitHub. 
+3. Go to to GoCD -> Admin -> Config XML. Paste your new token as a value into the correct property under the github authconfig. 
+You can paste as a `value` and the server will automatically encrypt this once the config has been loaded and change this to `encryptedValue`
+
+E.g. for a new Personal Access Token, copy the format below with your new token
+```
+<property>
+  <key>PersonalAccessToken</key>
+  <value>ghp_5Kxn3VHuJngV2pus5LWIvYzXxt98DS1cs7</value>
+</property>
+```
+
+If you have generated a new token before logging into GoCD first and are now locked out the dashboard you will need to SSH into the GoCD server and update the config XML file manually. The file is `cruise-config.xml` and located at `/var/gocd-data/data/config`. Follow the same steps above and replace the correct sections related to the newly generated tokens, or use this sample and paste your own values in. 
+
+```
+<authConfigs>
+	<authConfig id="prm-gh-auth" pluginId="cd.go.authorization.github">
+	  <property>
+		<key>ClientId</key>
+		<value>a70893bb0bdb83mar314</value>
+	  </property>
+	  <property>
+		<key>ClientSecret</key>
+		<value>abb6474851507550fee082cc4ef282f5a1b36fe4</value>
+	  </property>
+	  <property>
+		<key>AuthenticateWith</key>
+		<value>GitHub</value>
+	  </property>
+	  <property>
+		<key>GitHubEnterpriseUrl</key>
+		<value />
+	  </property>
+	  <property>
+		<key>AllowedOrganizations</key>
+		<value>nhsconnect</value>
+	  </property>
+	  <property>
+		<key>PersonalAccessToken</key>
+		<value>ghp_5Kxn3VHuJngV2pus5LWIvYzXxt98DS1cs7</value>
+	  </property>
+	</authConfig>
+</authConfigs>
+```
+
+The values will be encrypted once saved and read by the server. You may need to restart the GoCD service using `docker restart service`
+
+   
 ### GoCD Disk/Memory Related Issues
 
 You can release some disk space by doing the following whilst logged onto the server:
