@@ -206,16 +206,27 @@ This uses [certbot](https://certbot.eff.org/) and [letsencrypt](https://letsencr
 on your local machine (using AWS DNS automatically to
 prove ownership of domain) and then upload to `/etc/letsencrypt` can occur.
 
+First awsume (or assume-role) the AWS CI user
+```bash
+awsume ci
+```
+
 These steps were done on a machine that recently deployed GOCD agents, so it had `gocd-prod` and `gocd-prod.pub` keys
 in `terraform/ssh/`. If you don't have this, you need to run `./tasks ssh_key`.
 
+Then generate and sync the certificates
+(If you've not set your `GOCD_ENVIRONMENT` variable, these will need to be prefixed with `GOCD_ENVIRONMENT=prod`)
 ```bash
 ./tasks generate_ssl_certs
 sudo ./tasks sync_certs
 ```
 
-Over SSH on the GoCD server, you can then issue:
+Ensure you are connected to the GoCD VPN and then SSH into the EC2
+```bash
+ssh -i terraform/ssh/gocd-prod ec2-user@prod.gocd.patient-deductions.nhs.uk
+```
 
+Over SSH on the GoCD server, you can then issue:
 ```bash
 docker restart nginx
 ```
