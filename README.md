@@ -210,20 +210,20 @@ This uses [certbot](https://certbot.eff.org/) and [letsencrypt](https://letsencr
 on your local machine (using AWS DNS automatically to
 prove ownership of domain) and then upload to `/etc/letsencrypt` can occur.
 
-First awsume (or assume-role) the AWS CI user
-```bash
-awsume ci
-```
+1. SSO into the following AWS account: `NHS Digital DomainC GPIT PatientRecordMigrator Dev`.
+2. Set the following environment variable `export GOCD_ENVIRONMENT=prod`.
 
 These steps were done on a machine that recently deployed GOCD agents, so it had `gocd-prod` and `gocd-prod.pub` keys
 in `terraform/ssh/`. If you don't have this, you need to run `./tasks ssh_key`.
 
 Then generate and sync the certificates
-(If you've not set your `GOCD_ENVIRONMENT` variable, these will need to be prefixed with `GOCD_ENVIRONMENT=prod`)
+
 ```bash
 ./tasks generate_ssl_certs
 sudo ./tasks sync_certs
 ```
+
+**Important:** If you see a permission error while executing SCP please refer to the `Troubleshooting & Common Issues -> SCP Permission Denied when Syncing Certs` section within this README.
 
 Ensure you are connected to the GoCD VPN and then SSH into the EC2
 ```bash
@@ -244,6 +244,11 @@ docker restart nginx
 - Agents could be placed behind a NAT
 
 ## Troubleshooting & Common Issues
+
+### SCP Permission Denied when Syncing Certs
+
+[1] SSH onto the EC2 instance via `ssh -i terraform/ssh/gocd-prod ec2-user@prod.gocd.patient-deductions.nhs.uk`.
+[2] Run `sudo chmod 400 /home/ec2-user/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory/be16a80d6cbf772ba726755a81afe0fb/private_key.json`.
 
 ### Expired Github Personal Access Tokens/ OAuth Client Secrets
 When personal access token are due to expire:
@@ -304,4 +309,3 @@ You can release some disk space by doing the following whilst logged onto the se
 2. Remove the stopped `server` container to release some disk space: `docker system prune`
 3. Start a new `server`
    container: `docker run --detach -p "8153:8153" -p "8154:8154" --env GCHAT_NOTIFIER_CONF_PATH=/home/go/gchat_notif.conf --env GOCD_SERVER_JVM_OPTS="-Dlog4j2.formatMsgNoLookups=true" --volume "/var/gocd-data/data:/godata" --volume "/var/gocd-data/go-working-dir:/go-working-dir" --volume "/var/gocd-data/home:/home/go" --name server gocd-server:latest`
-
