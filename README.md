@@ -220,7 +220,7 @@ Then generate and sync the certificates
 
 ```bash
 ./tasks generate_ssl_certs
-sudo ./tasks sync_certs
+sudo GOCD_ENVIRONMENT=prod ./tasks sync_certs
 ```
 
 **Important:** If you see a permission error while executing SCP please refer to the `Troubleshooting & Common Issues -> SCP Permission Denied when Syncing Certs` section within this README.
