@@ -248,7 +248,7 @@ docker restart nginx
 ### SCP Permission Denied when Syncing Certs
 
 * SSH onto the EC2 instance via `ssh -i terraform/ssh/gocd-prod ec2-user@prod.gocd.patient-deductions.nhs.uk`.
-* Run `sudo chmod 400 /home/ec2-user/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory/be16a80d6cbf772ba726755a81afe0fb/private_key.json`.
+* Run `sudo chmod 644 /home/ec2-user/letsencrypt/accounts/acme-v02.api.letsencrypt.org/directory/be16a80d6cbf772ba726755a81afe0fb/private_key.json`.
 
 ### Expired Github Personal Access Tokens/ OAuth Client Secrets
 When personal access token are due to expire:
