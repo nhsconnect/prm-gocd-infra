@@ -1,12 +1,18 @@
 version: 2
 updates:
   - package-ecosystem: "terraform"
-    directory: "/"
+    directory: "/terraform"
     schedule:
       interval: "weekly"
       timezone: "Europe/London"
       time: "09:00"
     open-pull-requests-limit: 100
+  - package-ecosystem: "docker"
+    directory: "/ansible/roles/server/templates"
+    schedule:
+      interval: "weekly"
+      timezone: "Europe/London"
+      time: "09:00"
   - package-ecosystem: "github-actions" 
     directory: "/" 
     schedule: 
